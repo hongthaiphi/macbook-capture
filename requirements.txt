@@ -1,0 +1,12 @@
+sudo nano /usr/local/bin/screenshot_telegram.sh
+
+sudo chmod +x /usr/local/bin/screenshot_telegram.sh
+
+sudo nano /Library/LaunchAgents/com.screenshot.telegram.plist
+sudo launchctl unload -w /Library/LaunchAgents/com.screenshot.telegram.plist
+sudo launchctl load -w /Library/LaunchAgents/com.screenshot.telegram.plist
+
+tail -f /tmp/screenshot.log
+
+sudo tccutil reset ScreenCapture
+Sau đó vào System Preferences → Security & Privacy → Privacy → Screen Recording và tick lại cho Terminal.
