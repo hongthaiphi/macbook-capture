@@ -25,6 +25,16 @@ reg delete "HKLM\SOFTWARE\Policies\Google\Chrome\URLBlocklist" /f >nul 2>&1
 reg delete "HKLM\SOFTWARE\Policies\Microsoft\Edge\URLBlocklist" /f >nul 2>&1
 echo Done.
 
+:: Remove IFEO blocks (app time limits)
+echo Removing app launch blocks...
+for %%a in (chrome.exe msedge.exe firefox.exe brave.exe opera.exe Minecraft.Windows.exe RobloxPlayerBeta.exe steam.exe EpicGamesLauncher.exe Discord.exe) do (
+    reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\%%a" /v Debugger >nul 2>&1 && (
+        reg delete "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\%%a" /v Debugger /f >nul 2>&1
+        echo   Unblocked %%a
+    )
+)
+echo Done.
+
 echo.
 echo ========================================
 echo  Uninstall complete.

@@ -3,12 +3,15 @@ import logging
 import signal
 import sys
 
+from datetime import date
+
 from .config import load_config
 from .db import init_db
 from .tracker import Tracker, get_idle_seconds
 from .screenshot import ScreenshotLoop
 from .blocker import TelegramBot, _sync_all
 from .reporter import ReportScheduler, send_blocked_alert
+from .limiter import reset_daily_blocks
 
 logging.basicConfig(
     level=logging.INFO,
@@ -45,7 +48,12 @@ async def main():
             send_blocked_alert(bot, chat_id, app_name, domain), loop
         )
 
-    tracker = Tracker(config, on_blocked_domain=on_blocked_sync)
+    def on_limit_exceeded(alert_msg: str):
+        asyncio.run_coroutine_threadsafe(
+            bot.send_message(chat_id=chat_id, text=alert_msg), loop
+        )
+
+    tracker = Tracker(config, on_blocked_domain=on_blocked_sync, on_limit_exceeded=on_limit_exceeded)
     screenshot_loop = ScreenshotLoop(config, bot, get_idle_seconds)
     report_scheduler = ReportScheduler(config, bot)
 
@@ -53,10 +61,21 @@ async def main():
 
     await bot.send_message(chat_id=chat_id, text="🟢 Windows Monitor started")
 
+    async def midnight_reset_loop():
+        last_date = date.today()
+        while True:
+            await asyncio.sleep(60)
+            today = date.today()
+            if today != last_date:
+                logger.info("Midnight reset: unblocking all limited apps")
+                reset_daily_blocks()
+                last_date = today
+
     tasks = [
         asyncio.create_task(tracker.run()),
         asyncio.create_task(screenshot_loop.run()),
         asyncio.create_task(report_scheduler.run()),
+        asyncio.create_task(midnight_reset_loop()),
     ]
 
     stop_event = asyncio.Event()

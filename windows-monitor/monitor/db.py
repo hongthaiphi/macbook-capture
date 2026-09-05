@@ -35,8 +35,15 @@ def init_db():
             total_seconds INTEGER
         );
 
+        CREATE TABLE IF NOT EXISTS app_limits (
+            app_name TEXT PRIMARY KEY,
+            daily_limit_seconds INTEGER NOT NULL,
+            created_at TEXT NOT NULL
+        );
+
         CREATE INDEX IF NOT EXISTS idx_usage_timestamp ON usage_log(timestamp);
         CREATE INDEX IF NOT EXISTS idx_usage_domain ON usage_log(domain);
+        CREATE INDEX IF NOT EXISTS idx_usage_app ON usage_log(app_name);
     """)
     conn.close()
 
@@ -131,6 +138,43 @@ def is_domain_blocked(domain: str) -> bool:
     blocked = list_blocked_domains()
     conn.close()
     return any(domain == d or domain.endswith(f".{d}") for d in blocked)
+
+
+def set_app_limit(app_name: str, daily_limit_seconds: int):
+    conn = get_conn()
+    conn.execute(
+        "INSERT OR REPLACE INTO app_limits (app_name, daily_limit_seconds, created_at) VALUES (?, ?, ?)",
+        (app_name, daily_limit_seconds, datetime.now().isoformat()),
+    )
+    conn.commit()
+    conn.close()
+
+
+def remove_app_limit(app_name: str) -> bool:
+    conn = get_conn()
+    cursor = conn.execute("DELETE FROM app_limits WHERE app_name = ?", (app_name,))
+    conn.commit()
+    deleted = cursor.rowcount > 0
+    conn.close()
+    return deleted
+
+
+def get_all_app_limits() -> dict[str, int]:
+    conn = get_conn()
+    rows = conn.execute("SELECT app_name, daily_limit_seconds FROM app_limits").fetchall()
+    conn.close()
+    return {r["app_name"]: r["daily_limit_seconds"] for r in rows}
+
+
+def get_app_usage_today(app_name: str) -> int:
+    date_prefix = date.today().isoformat()
+    conn = get_conn()
+    result = conn.execute(
+        "SELECT COALESCE(SUM(duration_seconds), 0) FROM usage_log WHERE app_name = ? AND timestamp LIKE ?",
+        (app_name, f"{date_prefix}%"),
+    ).fetchone()[0]
+    conn.close()
+    return result
 
 
 def mark_daily_report_sent(target_date: date, total_seconds: int):

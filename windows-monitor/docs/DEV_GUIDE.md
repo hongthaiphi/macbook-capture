@@ -145,6 +145,36 @@ The tracker module imports `ctypes.windll` which only exists on Windows. To deve
 2. Test other modules independently — `db.py`, `utils.py`, `reporter.py` are cross-platform
 3. Use `pytest` with the Windows-specific imports behind `platform.system()` checks (future improvement)
 
+## App Time Limits (limiter.py)
+
+Allows setting daily usage limits for browsers and games. When an app exceeds its daily limit:
+
+1. **Kill process** — `taskkill /f /im <exe>`
+2. **Block relaunch** — IFEO (Image File Execution Options) Debugger trick: sets `HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\<exe>\Debugger` to `nul`. When Windows tries to launch the exe, it invokes "nul" as the debugger, which silently fails.
+3. **Alert parent** — sends Telegram message with usage details
+4. **Midnight reset** — a background loop detects date change and removes all IFEO blocks
+
+### IFEO Debugger Trick
+
+Windows checks the IFEO registry key before launching any executable. If a `Debugger` value is present, Windows launches that debugger process instead of the target exe (passing the exe path as an argument). By setting `Debugger = "nul"`, the launch effectively does nothing — the app cannot start.
+
+This is more reliable than simply killing the process, because it prevents the child from being relaunched by the user or by auto-restart mechanisms.
+
+### Telegram Commands
+
+| Command | Example | Description |
+|---------|---------|-------------|
+| `/limit <app> <minutes>` | `/limit chrome 120` | Set 2-hour daily limit for Chrome |
+| `/unlimit <app>` | `/unlimit chrome` | Remove limit and unblock |
+| `/limits` | `/limits` | Show all limits with current usage |
+| `/deny <app>` | `/deny chrome` | Block app immediately |
+| `/allow <app>` | `/allow chrome` | Unblock app immediately |
+| `/apps` | `/apps` | List known app shortcuts |
+
+### Known App Shortcuts
+
+`chrome`, `edge`, `firefox`, `brave`, `opera`, `minecraft`, `roblox`, `steam`, `epic`, `discord`, `zalo`, `telegram` — each maps to the exe name. Custom exe names (e.g., `fortnite.exe`) can also be used directly.
+
 ## Known Limitations
 
 - **Window title parsing** is heuristic — some SPAs don't put the domain in the title

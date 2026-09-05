@@ -7,6 +7,7 @@ import psutil
 
 from . import db
 from .utils import extract_domain_from_title
+from .limiter import enforce_app_limit
 
 logger = logging.getLogger(__name__)
 
@@ -50,10 +51,11 @@ def get_active_window_info() -> tuple[str, str] | None:
 
 
 class Tracker:
-    def __init__(self, config: dict, on_blocked_domain=None):
+    def __init__(self, config: dict, on_blocked_domain=None, on_limit_exceeded=None):
         self.poll_interval = config["poll_interval_seconds"]
         self.idle_timeout = config["idle_timeout_seconds"]
         self.on_blocked_domain = on_blocked_domain
+        self.on_limit_exceeded = on_limit_exceeded
         self._last_app = None
         self._last_domain = None
         self._running = False
@@ -89,6 +91,10 @@ class Tracker:
         if domain and db.is_domain_blocked(domain):
             if self.on_blocked_domain and (app_name, domain) != (self._last_app, self._last_domain):
                 self.on_blocked_domain(app_name, domain)
+
+        alert = enforce_app_limit(app_name)
+        if alert and self.on_limit_exceeded:
+            self.on_limit_exceeded(alert)
 
         self._last_app = app_name
         self._last_domain = domain

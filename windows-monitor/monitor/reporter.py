@@ -44,6 +44,19 @@ def build_daily_report(target_date: date | None = None) -> str:
         lines.append("")
         lines.append(f"🚫 Blocked domains: {len(blocked)}")
 
+    limits = db.get_all_app_limits()
+    if limits:
+        lines.append("")
+        lines.append("⏰ App Limits:")
+        for exe, limit_sec in limits.items():
+            used = db.get_app_usage_today(exe)
+            remaining = max(0, limit_sec - used)
+            status = "🔴" if remaining == 0 else "🟢"
+            name = exe.replace(".exe", "")
+            lines.append(
+                f"  {status} {name:<15} {format_duration(used)}/{format_duration(limit_sec)} (còn {format_duration(remaining)})"
+            )
+
     return "\n".join(lines)
 
 

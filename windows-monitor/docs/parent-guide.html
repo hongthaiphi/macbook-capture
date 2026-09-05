@@ -582,6 +582,16 @@
     <div class="feature-title">Cảnh báo tức thì</div>
     <p class="feature-desc">Nhận thông báo ngay khi con vào web bị cấm</p>
   </div>
+  <div class="feature">
+    <div class="feature-icon">⏰</div>
+    <div class="feature-title">Giới hạn thời gian</div>
+    <p class="feature-desc">Đặt thời gian dùng Chrome, game mỗi ngày</p>
+  </div>
+  <div class="feature">
+    <div class="feature-icon">🔐</div>
+    <div class="feature-title">Chặn app tức thì</div>
+    <p class="feature-desc">Chặn/mở app bất kỳ lúc nào từ Telegram</p>
+  </div>
 </div>
 
 <h2>Cách hoạt động</h2>
@@ -662,6 +672,30 @@
       <td><code>/screenshot</code></td>
       <td>Chụp màn hình ngay lập tức</td>
     </tr>
+    <tr>
+      <td><code>/limit chrome 120</code></td>
+      <td>Giới hạn Chrome 120 phút/ngày</td>
+    </tr>
+    <tr>
+      <td><code>/unlimit chrome</code></td>
+      <td>Xóa giới hạn thời gian Chrome</td>
+    </tr>
+    <tr>
+      <td><code>/limits</code></td>
+      <td>Xem tất cả giới hạn và thời gian đã dùng</td>
+    </tr>
+    <tr>
+      <td><code>/deny chrome</code></td>
+      <td>Chặn Chrome ngay lập tức</td>
+    </tr>
+    <tr>
+      <td><code>/allow chrome</code></td>
+      <td>Mở lại Chrome</td>
+    </tr>
+    <tr>
+      <td><code>/apps</code></td>
+      <td>Xem danh sách app có thể giới hạn</td>
+    </tr>
   </tbody>
 </table>
 </div>
@@ -681,7 +715,34 @@
   youtube.com     1h 20m  ████████░░░░░░ 59%
   google.com      0h 15m  ██░░░░░░░░░░░░ 11%
 
-🚫 Blocked domains: 2</div>
+🚫 Blocked domains: 2
+
+⏰ App Limits:
+  🟢 chrome          1h 45m/2h 00m (còn 0h 15m)
+  🔴 minecraft       1h 00m/1h 00m (còn 0h 00m)</div>
+
+<h2>Giới hạn thời gian dùng app</h2>
+
+<p>Bạn có thể đặt giới hạn thời gian dùng hàng ngày cho từng app — trình duyệt (Chrome, Edge, Firefox...) hoặc game (Minecraft, Roblox, Steam...). Khi hết giờ, app tự động bị đóng và không cho mở lại cho đến ngày hôm sau.</p>
+
+<div class="card">
+  <div class="card-label">Ví dụ</div>
+  <h3>Giới hạn Chrome 2 tiếng/ngày</h3>
+  <p>Gửi: <code>/limit chrome 120</code><br>
+  Con dùng Chrome được 2 tiếng. Khi hết → Chrome tự đóng, mở lại cũng không được. Sáng hôm sau → tự reset, dùng tiếp 2 tiếng mới.</p>
+</div>
+
+<div class="card">
+  <div class="card-label">Chặn ngay lập tức</div>
+  <h3>Không cho dùng app ngay bây giờ</h3>
+  <p>Gửi: <code>/deny chrome</code><br>
+  Chrome bị đóng ngay và không cho mở lại. Muốn mở lại: <code>/allow chrome</code></p>
+</div>
+
+<div class="tip-box">
+  <strong>Mẹo</strong>
+  <p>Gửi <code>/apps</code> để xem danh sách tên tắt: chrome, edge, firefox, minecraft, roblox, steam, epic, discord... Bạn cũng có thể dùng tên file .exe trực tiếp nếu app không nằm trong danh sách.</p>
+</div>
 
 <h2>Cài đặt (nhờ người biết IT)</h2>
 
@@ -863,6 +924,12 @@
 
   <dt>Con có thể tự đổi DNS để bypass không?</dt>
   <dd>Không. DNS được áp dụng bằng chính sách cấp hệ thống (NRPT) — con không thể thay đổi dù vào Settings hay đổi sang WiFi khác. Trong Chrome/Edge, registry policy cũng khóa cứng DNS — kể cả vào chrome://settings cũng không đổi được. Tất cả đều cần quyền Administrator mới gỡ được.</dd>
+
+  <dt>Giới hạn thời gian có bị reset khi tắt máy không?</dt>
+  <dd>Không. Thời gian sử dụng được lưu trong database. Nếu con tắt máy rồi mở lại, thời gian đã dùng vẫn được tính tiếp. Giới hạn chỉ reset lúc 0 giờ đêm mỗi ngày.</dd>
+
+  <dt>Con có thể mở lại app bị giới hạn không?</dt>
+  <dd>Không. App sử dụng cơ chế cấp hệ thống (IFEO) để chặn — con không thể mở lại dù click vào icon, tìm trong Start Menu, hay dùng Task Manager. Cần quyền Administrator mới gỡ được.</dd>
 
   <dt>SafeSearch có lọc được YouTube không?</dt>
   <dd>Google SafeSearch chỉ lọc kết quả tìm kiếm Google. Để lọc nội dung YouTube, bạn nên bật Restricted Mode trên YouTube (hoặc dùng AdGuard DNS Family — nó cũng lọc một phần nội dung 18+ trên YouTube).</dd>

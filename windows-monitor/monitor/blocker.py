@@ -9,6 +9,7 @@ from telegram.ext import Application, CommandHandler, ContextTypes
 from . import db
 from .reporter import build_daily_report
 from .screenshot import capture_and_send
+from . import limiter
 
 logger = logging.getLogger(__name__)
 
@@ -112,6 +113,12 @@ class TelegramBot:
             "/block <domain> — Block a website\n"
             "/unblock <domain> — Unblock a website\n"
             "/list — List blocked domains\n"
+            "/limit <app> <minutes> — Daily time limit\n"
+            "/unlimit <app> — Remove time limit\n"
+            "/limits — Show all limits & status\n"
+            "/deny <app> — Block app immediately\n"
+            "/allow <app> — Unblock app immediately\n"
+            "/apps — List known app shortcuts\n"
             "/report — Get today's usage report\n"
             "/screenshot — Take a screenshot now\n"
             "/help — Show this message"
@@ -172,6 +179,99 @@ class TelegramBot:
         if not ok:
             await update.message.reply_text("❌ Screenshot failed")
 
+    async def _cmd_limit(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        if not self._is_admin(update):
+            return
+        if len(context.args) < 2:
+            await update.message.reply_text("Usage: /limit <app> <minutes>\nExample: /limit chrome 120")
+            return
+
+        name = context.args[0]
+        exe = limiter.resolve_app_name(name)
+        if not exe:
+            await update.message.reply_text(f"❌ Unknown app: {name}\nDùng /apps để xem danh sách")
+            return
+
+        try:
+            minutes = int(context.args[1])
+        except ValueError:
+            await update.message.reply_text("❌ Số phút phải là số nguyên")
+            return
+
+        db.set_app_limit(exe, minutes * 60)
+        await update.message.reply_text(f"✅ Giới hạn {exe}: {minutes} phút/ngày")
+
+    async def _cmd_unlimit(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        if not self._is_admin(update):
+            return
+        if not context.args:
+            await update.message.reply_text("Usage: /unlimit <app>")
+            return
+
+        name = context.args[0]
+        exe = limiter.resolve_app_name(name)
+        if not exe:
+            await update.message.reply_text(f"❌ Unknown app: {name}")
+            return
+
+        limiter._unblock_app_launch(exe)
+        if db.remove_app_limit(exe):
+            await update.message.reply_text(f"✅ Đã xóa giới hạn: {exe}")
+        else:
+            await update.message.reply_text(f"ℹ️ {exe} không có giới hạn")
+
+    async def _cmd_limits(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        if not self._is_admin(update):
+            return
+        limits = db.get_all_app_limits()
+        if not limits:
+            await update.message.reply_text("✅ Chưa đặt giới hạn nào")
+            return
+
+        lines = ["⏰ App Limits:\n"]
+        for exe in limits:
+            lines.append(limiter.get_app_status(exe))
+            lines.append("")
+        await update.message.reply_text("\n".join(lines))
+
+    async def _cmd_deny(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        if not self._is_admin(update):
+            return
+        if not context.args:
+            await update.message.reply_text("Usage: /deny <app>\nExample: /deny chrome")
+            return
+
+        name = context.args[0]
+        exe = limiter.resolve_app_name(name)
+        if not exe:
+            await update.message.reply_text(f"❌ Unknown app: {name}")
+            return
+
+        limiter._kill_process(exe)
+        limiter._block_app_launch(exe)
+        await update.message.reply_text(f"🚫 Đã chặn {exe}")
+
+    async def _cmd_allow(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        if not self._is_admin(update):
+            return
+        if not context.args:
+            await update.message.reply_text("Usage: /allow <app>")
+            return
+
+        name = context.args[0]
+        exe = limiter.resolve_app_name(name)
+        if not exe:
+            await update.message.reply_text(f"❌ Unknown app: {name}")
+            return
+
+        limiter._unblock_app_launch(exe)
+        await update.message.reply_text(f"✅ Đã mở lại {exe}")
+
+    async def _cmd_apps(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        if not self._is_admin(update):
+            return
+        await update.message.reply_text(limiter.list_known_apps())
+
     def build_app(self) -> Application:
         self.app = Application.builder().token(self.config["bot_token"]).build()
 
@@ -181,6 +281,12 @@ class TelegramBot:
             CommandHandler("block", self._cmd_block),
             CommandHandler("unblock", self._cmd_unblock),
             CommandHandler("list", self._cmd_list),
+            CommandHandler("limit", self._cmd_limit),
+            CommandHandler("unlimit", self._cmd_unlimit),
+            CommandHandler("limits", self._cmd_limits),
+            CommandHandler("deny", self._cmd_deny),
+            CommandHandler("allow", self._cmd_allow),
+            CommandHandler("apps", self._cmd_apps),
             CommandHandler("report", self._cmd_report),
             CommandHandler("screenshot", self._cmd_screenshot),
         ]
