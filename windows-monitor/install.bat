@@ -105,7 +105,8 @@ schtasks /delete /tn "WindowsMonitor" /f >nul 2>&1
 taskkill /f /im pythonw.exe /fi "WINDOWTITLE eq monitor" >nul 2>&1
 
 :: Use PowerShell to create task with proper working directory
-powershell -Command "$action = New-ScheduledTaskAction -Execute '%PYTHONW_PATH%' -Argument '-m monitor' -WorkingDirectory '%MONITOR_DIR%'; $trigger = New-ScheduledTaskTrigger -AtLogOn; $settings = New-ScheduledTaskSettingsSet -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -ExecutionTimeLimit 0; $task = Register-ScheduledTask -TaskName 'WindowsMonitor' -Action $action -Trigger $trigger -Settings $settings -User '%ADMIN_USER%' -Password '%ADMIN_PASS%' -RunLevel Highest -Force; if ($task) { Write-Host 'Task created successfully.'; Write-Host 'WorkingDirectory:' $task.Actions[0].WorkingDirectory } else { Write-Host 'ERROR: Task creation failed'; exit 1 }"
+:: LogonType InteractiveOrPassword = runs in desktop session (can capture screen) but also starts when user not logged on
+powershell -Command "$action = New-ScheduledTaskAction -Execute '%PYTHONW_PATH%' -Argument '-m monitor' -WorkingDirectory '%MONITOR_DIR%'; $trigger = New-ScheduledTaskTrigger -AtLogOn; $principal = New-ScheduledTaskPrincipal -UserId '%ADMIN_USER%' -LogonType InteractiveOrPassword -RunLevel Highest; $settings = New-ScheduledTaskSettingsSet -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -ExecutionTimeLimit 0; $task = Register-ScheduledTask -TaskName 'WindowsMonitor' -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Password '%ADMIN_PASS%' -Force; if ($task) { Write-Host 'Task created successfully.'; Write-Host 'WorkingDirectory:' $task.Actions[0].WorkingDirectory; Write-Host 'LogonType:' $task.Principal.LogonType } else { Write-Host 'ERROR: Task creation failed'; exit 1 }"
 
 if %errorlevel% neq 0 (
     echo.
@@ -131,9 +132,9 @@ schtasks /run /tn "WindowsMonitor"
 
 :: Wait a moment then check if it's running
 timeout /t 5 >nul
-tasklist /fi "IMAGENAME eq pythonw.exe" | findstr pythonw >nul
-if %errorlevel%==0 (
-    echo Monitor is running (via Task Scheduler, independent of this window).
+tasklist | findstr /i "pythonw.exe monitor.exe" >nul 2>&1
+if not errorlevel 1 (
+    echo Monitor is running via Task Scheduler, independent of this window.
 ) else (
     echo.
     echo WARNING: Monitor does not appear to be running.
