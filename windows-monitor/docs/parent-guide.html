@@ -1,332 +1,415 @@
 <title>Hướng dẫn Windows Monitor</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Inter:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
 <style>
   :root {
-    --bg: #FAFAF8;
+    --bg: #FDFCFA;
     --surface: #FFFFFF;
-    --surface-alt: #F0EFEB;
-    --text: #1A1A18;
-    --text-secondary: #5C5B56;
-    --accent: #2E7D5B;
-    --accent-light: #E8F5EE;
-    --accent-dark: #1B5E3E;
-    --alert: #C0392B;
-    --alert-light: #FDEDEB;
-    --border: #E0DFD9;
-    --shadow: rgba(26, 26, 24, 0.06);
+    --surface-tinted: #F2F7F4;
+    --surface-alt: #F5F4F1;
+    --text: #1C1C1A;
+    --text-secondary: #6B6A64;
+    --text-tertiary: #9C9B95;
+    --accent: #1A7A4C;
+    --accent-soft: #EFF7F2;
+    --accent-muted: #B4DCC5;
+    --alert: #D94452;
+    --alert-soft: #FDF0F1;
+    --blue: #2B6CB0;
+    --blue-soft: #EBF4FF;
+    --border: #E9E8E4;
+    --border-light: #F0EFEB;
+    --radius: 14px;
+    --radius-sm: 10px;
   }
 
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --bg: #141413;
-      --surface: #1E1E1C;
-      --surface-alt: #262624;
-      --text: #EAEAE6;
-      --text-secondary: #9B9A94;
-      --accent: #4CAF7A;
-      --accent-light: #1A2E23;
-      --accent-dark: #6FCF9A;
-      --alert: #E74C3C;
-      --alert-light: #2A1614;
-      --border: #333330;
-      --shadow: rgba(0, 0, 0, 0.3);
+      --bg: #111110;
+      --surface: #1A1A18;
+      --surface-tinted: #1A2620;
+      --surface-alt: #222220;
+      --text: #EDEDEA;
+      --text-secondary: #A3A29C;
+      --text-tertiary: #7A7974;
+      --accent: #45C27E;
+      --accent-soft: #162A1F;
+      --accent-muted: #2A5E40;
+      --alert: #F06070;
+      --alert-soft: #2C1618;
+      --blue: #5B9BD5;
+      --blue-soft: #172436;
+      --border: #2E2E2C;
+      --border-light: #252523;
+      --radius: 14px;
+      --radius-sm: 10px;
     }
   }
 
   :root[data-theme="dark"] {
-    --bg: #141413;
-    --surface: #1E1E1C;
-    --surface-alt: #262624;
-    --text: #EAEAE6;
-    --text-secondary: #9B9A94;
-    --accent: #4CAF7A;
-    --accent-light: #1A2E23;
-    --accent-dark: #6FCF9A;
-    --alert: #E74C3C;
-    --alert-light: #2A1614;
-    --border: #333330;
-    --shadow: rgba(0, 0, 0, 0.3);
+    --bg: #111110;
+    --surface: #1A1A18;
+    --surface-tinted: #1A2620;
+    --surface-alt: #222220;
+    --text: #EDEDEA;
+    --text-secondary: #A3A29C;
+    --text-tertiary: #7A7974;
+    --accent: #45C27E;
+    --accent-soft: #162A1F;
+    --accent-muted: #2A5E40;
+    --alert: #F06070;
+    --alert-soft: #2C1618;
+    --blue: #5B9BD5;
+    --blue-soft: #172436;
+    --border: #2E2E2C;
+    --border-light: #252523;
   }
 
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'Be Vietnam Pro', 'Segoe UI', system-ui, sans-serif;
-    font-size: 1.05rem;
-    line-height: 1.75;
-    max-width: 720px;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 1rem;
+    line-height: 1.7;
+    max-width: 680px;
     margin: 0 auto;
-    padding: 2.5rem 1.25rem 4rem;
+    padding: 2rem 1.5rem 5rem;
     -webkit-text-size-adjust: 100%;
+    font-feature-settings: 'cv01', 'cv03';
   }
 
+  /* ── Hero ── */
   .hero {
     text-align: center;
-    padding: 2.5rem 0 2rem;
+    padding: 3rem 0 2.5rem;
   }
 
-  .hero-icon {
-    font-size: 3rem;
-    margin-bottom: 0.75rem;
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.4rem 1rem;
+    border-radius: 100px;
+    margin-bottom: 1.25rem;
   }
 
   h1 {
-    font-size: 1.85rem;
+    font-size: 2rem;
     font-weight: 700;
-    letter-spacing: -0.01em;
-    margin: 0 0 0.5rem;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+    margin-bottom: 0.75rem;
     text-wrap: balance;
+    color: var(--text);
   }
 
-  .hero p {
+  .hero-sub {
     color: var(--text-secondary);
     font-size: 1.1rem;
-    margin: 0;
+    line-height: 1.6;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* ── Section headings ── */
+  .section {
+    margin-top: 3.5rem;
   }
 
   h2 {
-    font-size: 1.3rem;
-    font-weight: 600;
-    margin: 2.5rem 0 1rem;
-    padding-bottom: 0.4rem;
-    border-bottom: 2px solid var(--accent);
-    display: inline-block;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.3;
+    margin-bottom: 1rem;
+    color: var(--text);
   }
 
   h3 {
     font-size: 1.1rem;
     font-weight: 600;
-    margin: 1.5rem 0 0.5rem;
-  }
-
-  p, li {
-    font-size: 1.05rem;
+    margin-bottom: 0.6rem;
     color: var(--text);
   }
 
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 1.25rem 1.5rem;
-    margin: 1rem 0;
-    box-shadow: 0 1px 3px var(--shadow);
-  }
-
-  .card-label {
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--accent);
-    margin: 0 0 0.5rem;
-  }
-
-  .card h3 {
-    margin: 0 0 0.4rem;
-  }
-
-  .card p {
-    margin: 0;
-    color: var(--text-secondary);
+  p {
+    margin-bottom: 1rem;
+    color: var(--text);
     font-size: 1rem;
+    line-height: 1.8;
   }
 
-  .flow {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    position: relative;
-    padding-left: 2rem;
-  }
+  p:last-child { margin-bottom: 0; }
 
-  .flow::before {
-    content: '';
-    position: absolute;
-    left: 0.55rem;
-    top: 0.75rem;
-    bottom: 0.75rem;
-    width: 2px;
-    background: var(--border);
-  }
+  strong { font-weight: 600; }
 
-  .flow-step {
-    position: relative;
-    padding: 0.75rem 0;
-  }
-
-  .flow-step::before {
-    content: '';
-    position: absolute;
-    left: -1.55rem;
-    top: 1.05rem;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--accent);
-    border: 2px solid var(--bg);
-  }
-
-  .flow-step strong {
-    display: block;
-    font-size: 1.05rem;
-    margin-bottom: 0.15rem;
-  }
-
-  .flow-step span {
-    font-size: 0.95rem;
-    color: var(--text-secondary);
-  }
-
-  .alert-box {
-    background: var(--alert-light);
-    border-left: 3px solid var(--alert);
-    border-radius: 0 8px 8px 0;
-    padding: 1rem 1.25rem;
-    margin: 1rem 0;
-  }
-
-  .alert-box strong {
-    color: var(--alert);
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-
-  .alert-box p {
-    margin: 0.3rem 0 0;
-    font-size: 1rem;
-  }
-
-  .tip-box {
-    background: var(--accent-light);
-    border-left: 3px solid var(--accent);
-    border-radius: 0 8px 8px 0;
-    padding: 1rem 1.25rem;
-    margin: 1rem 0;
-  }
-
-  .tip-box strong {
-    color: var(--accent);
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-
-  .tip-box p {
-    margin: 0.3rem 0 0;
-    font-size: 1rem;
-  }
-
+  /* ── Feature grid ── */
   .features {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0.75rem;
-    margin: 1rem 0;
+    margin-top: 1.25rem;
   }
 
-  @media (max-width: 520px) {
-    .features { grid-template-columns: 1fr; }
-  }
-
-  .feature {
+  .feat {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 1rem;
-    text-align: center;
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
   }
 
-  .feature-icon {
-    font-size: 1.6rem;
-    margin-bottom: 0.4rem;
+  .feat-icon {
+    font-size: 1.75rem;
+    line-height: 1;
+    margin-bottom: 0.25rem;
   }
 
-  .feature-title {
+  .feat-name {
     font-weight: 600;
-    font-size: 1rem;
-    margin-bottom: 0.2rem;
-  }
-
-  .feature-desc {
-    font-size: 0.92rem;
-    color: var(--text-secondary);
-    margin: 0;
-  }
-
-  .cmd-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 1rem 0;
-    font-size: 1rem;
-  }
-
-  .cmd-table th {
-    text-align: left;
-    font-weight: 600;
-    padding: 0.6rem 0.75rem;
-    border-bottom: 2px solid var(--border);
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--text-secondary);
-  }
-
-  .cmd-table td {
-    padding: 0.6rem 0.75rem;
-    border-bottom: 1px solid var(--border);
-    vertical-align: top;
-  }
-
-  .cmd-table code {
-    background: var(--surface-alt);
-    padding: 0.2em 0.5em;
-    border-radius: 4px;
-    font-family: 'Inter', monospace;
     font-size: 0.95rem;
-    font-weight: 500;
-    white-space: nowrap;
-  }
-
-  .report-preview {
-    background: var(--surface-alt);
-    border-radius: 8px;
-    padding: 1rem 1.25rem;
-    font-family: 'Inter', monospace;
-    font-size: 0.88rem;
-    line-height: 1.6;
-    white-space: pre-line;
-    overflow-x: auto;
-    margin: 1rem 0;
     color: var(--text);
   }
 
-  .setup-steps {
-    counter-reset: step;
+  .feat-desc {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* ── Timeline / flow ── */
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 1rem;
+  }
+
+  .tl-item {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: 0;
+    min-height: 4.5rem;
+  }
+
+  .tl-rail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 0.15rem;
+  }
+
+  .tl-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+    margin-top: 0.35rem;
+  }
+
+  .tl-line {
+    width: 2px;
+    flex: 1;
+    background: var(--border);
+    margin: 0.35rem 0;
+  }
+
+  .tl-item:last-child .tl-line { display: none; }
+
+  .tl-body {
+    padding: 0 0 1.5rem;
+  }
+
+  .tl-title {
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 0.2rem;
+    color: var(--text);
+  }
+
+  .tl-desc {
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.35rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .card-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+
+  .card h3 { margin-bottom: 0.35rem; }
+
+  .card p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin-bottom: 0;
+  }
+
+  /* ── Command list (replaces table) ── */
+  .cmd-group-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-tertiary);
+    margin: 1.75rem 0 0.6rem;
+  }
+
+  .cmd-group-label:first-child { margin-top: 0.5rem; }
+
+  .cmd-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .cmd-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+  }
+
+  .cmd-code {
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 0.2em 0.55em;
+    border-radius: 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .cmd-desc {
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* ── Callout boxes ── */
+  .callout {
+    border-radius: var(--radius);
+    padding: 1.15rem 1.25rem;
+    margin: 1rem 0;
+  }
+
+  .callout-tip {
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-muted);
+  }
+
+  .callout-warn {
+    background: var(--alert-soft);
+    border: 1px solid var(--alert);
+    border-width: 1px 1px 1px 3px;
+  }
+
+  .callout-info {
+    background: var(--blue-soft);
+    border: 1px solid var(--blue);
+    border-width: 1px 1px 1px 3px;
+  }
+
+  .callout-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.4rem;
+  }
+
+  .callout-tip .callout-label { color: var(--accent); }
+  .callout-warn .callout-label { color: var(--alert); }
+  .callout-info .callout-label { color: var(--blue); }
+
+  .callout p {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin-bottom: 0;
+    color: var(--text);
+  }
+
+  .callout code {
+    background: var(--surface);
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.88em;
+    font-weight: 500;
+  }
+
+  /* ── Report preview ── */
+  .report-box {
+    background: var(--surface-alt);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.25rem;
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 0.82rem;
+    line-height: 1.65;
+    white-space: pre;
+    overflow-x: auto;
+    margin: 1rem 0;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  /* ── Numbered steps ── */
+  .steps {
+    counter-reset: s;
     list-style: none;
-    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 0.75rem;
   }
 
-  .setup-steps li {
-    counter-increment: step;
-    position: relative;
-    padding: 0.75rem 0 0.75rem 3rem;
-    border-bottom: 1px solid var(--border);
+  .steps li {
+    counter-increment: s;
+    display: grid;
+    grid-template-columns: 2.25rem 1fr;
+    gap: 0.75rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-light);
+    align-items: start;
   }
 
-  .setup-steps li:last-child {
-    border-bottom: none;
-  }
+  .steps li:last-child { border-bottom: none; }
 
-  .setup-steps li::before {
-    content: counter(step);
-    position: absolute;
-    left: 0;
-    top: 0.75rem;
-    width: 2rem;
-    height: 2rem;
+  .steps li::before {
+    content: counter(s);
+    width: 2.25rem;
+    height: 2.25rem;
     background: var(--accent);
     color: #fff;
     border-radius: 50%;
@@ -335,85 +418,129 @@
     justify-content: center;
     font-weight: 700;
     font-size: 0.85rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
   }
 
-  .setup-steps li strong {
+  .steps li strong {
     display: block;
-    margin-bottom: 0.15rem;
-  }
-
-  .faq dt {
+    font-size: 1rem;
     font-weight: 600;
-    font-size: 1.08rem;
-    margin: 1.25rem 0 0.3rem;
+    margin-bottom: 0.15rem;
     color: var(--text);
   }
 
-  .faq dd {
-    margin: 0 0 0 0;
-    font-size: 1rem;
+  .steps li span {
+    font-size: 0.92rem;
     color: var(--text-secondary);
+    line-height: 1.6;
   }
 
-  .shield-grid {
+  .steps code {
+    background: var(--surface-alt);
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.88em;
+  }
+
+  /* ── Comparison ── */
+  .compare {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0.75rem;
     margin: 1rem 0;
   }
 
-  @media (max-width: 520px) {
-    .shield-grid { grid-template-columns: 1fr; }
+  .compare-side {
+    border-radius: var(--radius);
+    padding: 1.15rem;
+    text-align: center;
   }
 
-  .shield-item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 1rem 1.25rem;
+  .compare-bad {
+    background: var(--alert-soft);
+    border: 1px solid var(--alert);
   }
 
-  .shield-item .shield-icon {
-    font-size: 1.4rem;
-    margin-bottom: 0.3rem;
+  .compare-good {
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
   }
 
-  .shield-item .shield-title {
-    color: var(--text);
-    font-weight: 600;
-    font-size: 1rem;
-    margin-bottom: 0.25rem;
+  .compare-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.5rem;
   }
 
-  .shield-item p {
+  .compare-bad .compare-tag { color: var(--alert); }
+  .compare-good .compare-tag { color: var(--accent); }
+
+  .compare-body {
     font-size: 0.92rem;
-    color: var(--text-secondary);
-    margin: 0;
+    line-height: 1.55;
+    font-weight: 500;
+    color: var(--text);
   }
 
-  .layer-diagram {
+  /* ── Shield grid ── */
+  .shields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+
+  .shield {
+    background: var(--surface-tinted);
+    border-radius: var(--radius-sm);
+    padding: 1rem 1.1rem;
+  }
+
+  .shield-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.4rem;
+    line-height: 1;
+  }
+
+  .shield-name {
+    font-weight: 600;
+    font-size: 0.92rem;
+    margin-bottom: 0.25rem;
+    color: var(--text);
+  }
+
+  .shield-text {
+    font-size: 0.84rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* ── Layers diagram ── */
+  .layers {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 1.5rem;
-    margin: 1.25rem 0;
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin: 1rem 0;
   }
 
-  .layer {
+  .layer-row {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.6rem 0;
-    border-bottom: 1px dashed var(--border);
+    gap: 0.85rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border-light);
   }
 
-  .layer:last-child {
-    border-bottom: none;
-  }
+  .layer-row:last-child { border-bottom: none; }
 
   .layer-num {
-    width: 1.6rem;
-    height: 1.6rem;
+    width: 1.75rem;
+    height: 1.75rem;
     background: var(--accent);
     color: #fff;
     border-radius: 50%;
@@ -425,284 +552,313 @@
     flex-shrink: 0;
   }
 
-  .layer-content strong {
+  .layer-info strong {
     display: block;
-    font-size: 1.02rem;
-  }
-
-  .layer-content span {
     font-size: 0.95rem;
-    color: var(--text-secondary);
+    font-weight: 600;
+    margin-bottom: 0.1rem;
   }
 
-  .code-block {
-    background: var(--surface-alt);
-    border-radius: 6px;
-    padding: 0.75rem 1rem;
-    font-family: 'Inter', monospace;
+  .layer-info span {
     font-size: 0.88rem;
+    color: var(--text-secondary);
     line-height: 1.5;
-    overflow-x: auto;
-    margin: 0.75rem 0;
-    white-space: pre;
-    color: var(--text);
   }
 
-  .versus {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    gap: 0.5rem;
-    align-items: center;
-    margin: 1rem 0;
+  /* ── FAQ ── */
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-top: 1rem;
   }
 
-  .versus-side {
+  .faq-item {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 0.75rem 1rem;
-    text-align: center;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
   }
 
-  .versus-side.bad {
-    border-color: var(--alert);
-  }
-
-  .versus-side.good {
-    border-color: var(--accent);
-  }
-
-  .versus-arrow {
-    font-size: 1.2rem;
-    color: var(--text-secondary);
-  }
-
-  .versus-side .vs-label {
-    font-size: 0.8rem;
+  .faq-q {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.15rem;
+    font-size: 1rem;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 0.25rem;
+    line-height: 1.45;
+    color: var(--text);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    gap: 0.75rem;
   }
 
-  .versus-side.bad .vs-label { color: var(--alert); }
-  .versus-side.good .vs-label { color: var(--accent); }
+  .faq-q::after {
+    content: '+';
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+    transition: transform 0.2s;
+  }
 
-  .versus-side .vs-text {
+  .faq-item.open .faq-q::after {
+    content: '\2212';
+  }
+
+  .faq-a {
+    display: none;
+    padding: 0 1.15rem 1.1rem;
     font-size: 0.95rem;
-    font-weight: 500;
+    color: var(--text-secondary);
+    line-height: 1.7;
   }
 
+  .faq-item.open .faq-a { display: block; }
+
+  /* ── Footer ── */
   footer {
-    margin-top: 3rem;
+    margin-top: 4rem;
     padding-top: 1.5rem;
     border-top: 1px solid var(--border);
     text-align: center;
-    font-size: 0.88rem;
-    color: var(--text-secondary);
+    font-size: 0.85rem;
+    color: var(--text-tertiary);
   }
 
-  /* Mobile responsive */
+  /* ── Mobile ── */
   @media (max-width: 600px) {
     body {
-      padding: 1.5rem 1rem 3rem;
-      font-size: 1.08rem;
+      padding: 1.25rem 1.15rem 4rem;
+      font-size: 1.06rem;
     }
 
-    h1 { font-size: 1.6rem; }
-    h2 { font-size: 1.2rem; }
+    h1 { font-size: 1.65rem; }
+    h2 { font-size: 1.25rem; }
 
-    .hero { padding: 1.5rem 0 1.25rem; }
-    .hero-icon { font-size: 2.5rem; }
+    .hero { padding: 2rem 0 2rem; }
 
-    .card { padding: 1rem; }
+    .hero-sub { font-size: 1rem; }
 
-    .versus {
-      grid-template-columns: 1fr;
-      gap: 0.5rem;
-    }
+    .features { grid-template-columns: 1fr; gap: 0.6rem; }
+    .feat { flex-direction: row; align-items: center; gap: 0.85rem; padding: 1rem 1.1rem; }
+    .feat-icon { font-size: 1.5rem; margin-bottom: 0; }
+    .feat-text { display: flex; flex-direction: column; }
 
-    .versus-arrow {
-      transform: rotate(90deg);
-      text-align: center;
-    }
+    .compare { grid-template-columns: 1fr; }
 
-    .setup-steps li {
-      padding-left: 2.5rem;
-    }
+    .shields { grid-template-columns: 1fr; gap: 0.6rem; }
 
-    .setup-steps li::before {
-      width: 1.75rem;
-      height: 1.75rem;
-    }
-
-    .layer {
-      align-items: flex-start;
-    }
-
-    .report-preview {
-      font-size: 0.8rem;
+    .cmd-item {
+      flex-direction: column;
+      gap: 0.35rem;
       padding: 0.75rem 1rem;
     }
 
-    .cmd-table code {
-      font-size: 0.88rem;
+    .report-box {
+      font-size: 0.75rem;
+      padding: 1rem;
     }
+
+    .section { margin-top: 3rem; }
   }
 </style>
 
 <div class="hero">
-  <div class="hero-icon">🛡️</div>
+  <div class="hero-badge">Parental Control</div>
   <h1>Windows Monitor</h1>
-  <p>Theo dõi & bảo vệ con bạn trên máy tính — điều khiển từ xa qua Telegram</p>
+  <p class="hero-sub">Theo dõi & bảo vệ con trên máy tính, điều khiển từ xa qua Telegram</p>
 </div>
 
-<h2>App này làm gì?</h2>
+<!-- ═══ What it does ═══ -->
+<div class="section">
+  <h2>App này làm gì?</h2>
+  <p>Windows Monitor chạy ngầm trên máy tính của con, tự động ghi lại hoạt động và gửi báo cáo cho bạn qua Telegram. Bạn không cần ngồi cạnh — mọi thứ nhận được trên điện thoại.</p>
 
-<p>Windows Monitor chạy ngầm trên máy tính của con, tự động ghi lại hoạt động và gửi báo cáo cho bạn qua Telegram. Bạn không cần ngồi cạnh để giám sát — mọi thứ đều nhận được trên điện thoại.</p>
-
-<div class="features">
-  <div class="feature">
-    <div class="feature-icon">📊</div>
-    <div class="feature-title">Theo dõi thời gian</div>
-    <p class="feature-desc">Biết con dùng app gì, vào web nào, bao lâu</p>
-  </div>
-  <div class="feature">
-    <div class="feature-icon">📸</div>
-    <div class="feature-title">Chụp màn hình</div>
-    <p class="feature-desc">Tự chụp mỗi phút, gửi ảnh về Telegram</p>
-  </div>
-  <div class="feature">
-    <div class="feature-icon">🚫</div>
-    <div class="feature-title">Chặn website</div>
-    <p class="feature-desc">Gửi lệnh từ Telegram để cấm trang web</p>
-  </div>
-  <div class="feature">
-    <div class="feature-icon">🔔</div>
-    <div class="feature-title">Cảnh báo tức thì</div>
-    <p class="feature-desc">Nhận thông báo ngay khi con vào web bị cấm</p>
-  </div>
-  <div class="feature">
-    <div class="feature-icon">⏰</div>
-    <div class="feature-title">Giới hạn thời gian</div>
-    <p class="feature-desc">Đặt thời gian dùng Chrome, game mỗi ngày</p>
-  </div>
-  <div class="feature">
-    <div class="feature-icon">🔐</div>
-    <div class="feature-title">Chặn app tức thì</div>
-    <p class="feature-desc">Chặn/mở app bất kỳ lúc nào từ Telegram</p>
-  </div>
-</div>
-
-<h2>Cách hoạt động</h2>
-
-<p>App chạy hoàn toàn tự động, bạn chỉ cần xem Telegram:</p>
-
-<div class="flow">
-  <div class="flow-step">
-    <strong>Con mở máy tính, đăng nhập Windows</strong>
-    <span>App tự khởi động theo, không cần mở thủ công</span>
-  </div>
-  <div class="flow-step">
-    <strong>App ghi lại hoạt động mỗi 5 giây</strong>
-    <span>Đang mở app gì? Vào website nào? Bao lâu rồi? Tất cả được lưu lại</span>
-  </div>
-  <div class="flow-step">
-    <strong>Chụp ảnh màn hình mỗi phút</strong>
-    <span>Ảnh gửi thẳng về Telegram cho bạn xem, rồi tự xóa trên máy con</span>
-  </div>
-  <div class="flow-step">
-    <strong>Nếu con vào web bị cấm → bạn nhận cảnh báo ngay</strong>
-    <span>Ví dụ: "🚫 tiktok.com — chrome.exe — 14:32:05"</span>
-  </div>
-  <div class="flow-step">
-    <strong>Cuối ngày: nhận báo cáo tổng hợp</strong>
-    <span>Top app, top website, tổng thời gian — gửi tự động lúc 10 giờ tối</span>
+  <div class="features">
+    <div class="feat">
+      <div class="feat-icon">📊</div>
+      <div class="feat-text">
+        <div class="feat-name">Theo dõi thời gian</div>
+        <div class="feat-desc">Biết con dùng app gì, vào web nào, bao lâu</div>
+      </div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">📸</div>
+      <div class="feat-text">
+        <div class="feat-name">Chụp màn hình</div>
+        <div class="feat-desc">Tự chụp mỗi phút, gửi ảnh về Telegram</div>
+      </div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">🚫</div>
+      <div class="feat-text">
+        <div class="feat-name">Chặn website</div>
+        <div class="feat-desc">Gửi lệnh từ Telegram để cấm trang web</div>
+      </div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">🔔</div>
+      <div class="feat-text">
+        <div class="feat-name">Cảnh báo tức thì</div>
+        <div class="feat-desc">Nhận thông báo ngay khi con vào web bị cấm</div>
+      </div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">⏰</div>
+      <div class="feat-text">
+        <div class="feat-name">Giới hạn thời gian</div>
+        <div class="feat-desc">Đặt thời gian dùng Chrome, game mỗi ngày</div>
+      </div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">🔐</div>
+      <div class="feat-text">
+        <div class="feat-name">Chặn app tức thì</div>
+        <div class="feat-desc">Chặn/mở app bất kỳ lúc nào từ Telegram</div>
+      </div>
+    </div>
   </div>
 </div>
 
-<h2>Theo dõi website trên mọi trình duyệt</h2>
+<!-- ═══ How it works ═══ -->
+<div class="section">
+  <h2>Cách hoạt động</h2>
+  <p>App chạy hoàn toàn tự động, bạn chỉ cần xem Telegram:</p>
 
-<p>Không cần cài thêm gì trên Chrome, Firefox hay Edge. App đọc <strong>tên cửa sổ</strong> của trình duyệt để biết con đang xem trang nào. Ví dụ:</p>
-
-<div class="card">
-  <div class="card-label">Cửa sổ Chrome hiển thị</div>
-  <h3>YouTube - Google Chrome</h3>
-  <p>→ App nhận ra: đang vào <strong>youtube.com</strong> bằng Chrome</p>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-rail"><div class="tl-dot"></div><div class="tl-line"></div></div>
+      <div class="tl-body">
+        <div class="tl-title">Con mở máy tính, đăng nhập</div>
+        <div class="tl-desc">App tự khởi động, không cần mở thủ công</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-rail"><div class="tl-dot"></div><div class="tl-line"></div></div>
+      <div class="tl-body">
+        <div class="tl-title">Ghi lại hoạt động mỗi 5 giây</div>
+        <div class="tl-desc">Đang mở app gì? Vào web nào? Bao lâu? Tất cả được lưu</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-rail"><div class="tl-dot"></div><div class="tl-line"></div></div>
+      <div class="tl-body">
+        <div class="tl-title">Chụp ảnh màn hình mỗi phút</div>
+        <div class="tl-desc">Ảnh gửi về Telegram, rồi tự xóa trên máy con</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-rail"><div class="tl-dot"></div><div class="tl-line"></div></div>
+      <div class="tl-body">
+        <div class="tl-title">Vào web bị cấm → cảnh báo ngay</div>
+        <div class="tl-desc">Ví dụ: "🚫 tiktok.com — chrome.exe — 14:32"</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-rail"><div class="tl-dot"></div></div>
+      <div class="tl-body">
+        <div class="tl-title">Cuối ngày: báo cáo tổng hợp</div>
+        <div class="tl-desc">Top app, top website, tổng thời gian — gửi tự động lúc 10 giờ tối</div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<div class="card">
-  <div class="card-label">Cửa sổ Firefox hiển thị</div>
-  <h3>Reddit — Mozilla Firefox</h3>
-  <p>→ App nhận ra: đang vào <strong>reddit.com</strong> bằng Firefox</p>
+<!-- ═══ Browser tracking ═══ -->
+<div class="section">
+  <h2>Theo dõi mọi trình duyệt</h2>
+  <p>Không cần cài thêm gì. App đọc <strong>tên cửa sổ</strong> của trình duyệt để biết con đang xem trang nào:</p>
+
+  <div class="card">
+    <div class="card-eyebrow">Chrome</div>
+    <h3>YouTube - Google Chrome</h3>
+    <p>→ Nhận ra: đang vào <strong>youtube.com</strong></p>
+  </div>
+  <div class="card">
+    <div class="card-eyebrow">Firefox</div>
+    <h3>Reddit — Mozilla Firefox</h3>
+    <p>→ Nhận ra: đang vào <strong>reddit.com</strong></p>
+  </div>
+
+  <p>Hoạt động với Chrome, Edge, Firefox, Brave, Opera. Con không thể lách bằng cách đổi trình duyệt.</p>
 </div>
 
-<p>Cách này hoạt động với Chrome, Edge, Firefox, Brave, Opera — bất kỳ trình duyệt nào. Con không thể lách bằng cách đổi sang trình duyệt khác.</p>
+<!-- ═══ Commands ═══ -->
+<div class="section">
+  <h2>Lệnh Telegram</h2>
+  <p>Mở Telegram, nhắn cho bot:</p>
 
-<h2>Lệnh Telegram</h2>
+  <div class="cmd-group-label">Chặn website</div>
+  <div class="cmd-list">
+    <div class="cmd-item">
+      <span class="cmd-code">/block tiktok.com</span>
+      <span class="cmd-desc">Cấm truy cập tiktok.com</span>
+    </div>
+    <div class="cmd-item">
+      <span class="cmd-code">/unblock tiktok.com</span>
+      <span class="cmd-desc">Bỏ cấm tiktok.com</span>
+    </div>
+    <div class="cmd-item">
+      <span class="cmd-code">/list</span>
+      <span class="cmd-desc">Xem trang web đang bị cấm</span>
+    </div>
+  </div>
 
-<p>Mở Telegram, nhắn cho bot các lệnh sau:</p>
+  <div class="cmd-group-label">Giới hạn thời gian</div>
+  <div class="cmd-list">
+    <div class="cmd-item">
+      <span class="cmd-code">/limit chrome 120</span>
+      <span class="cmd-desc">Giới hạn Chrome 120 phút/ngày</span>
+    </div>
+    <div class="cmd-item">
+      <span class="cmd-code">/unlimit chrome</span>
+      <span class="cmd-desc">Xóa giới hạn thời gian</span>
+    </div>
+    <div class="cmd-item">
+      <span class="cmd-code">/limits</span>
+      <span class="cmd-desc">Xem giới hạn và thời gian đã dùng</span>
+    </div>
+  </div>
 
-<div style="overflow-x: auto;">
-<table class="cmd-table">
-  <thead>
-    <tr>
-      <th>Lệnh</th>
-      <th>Tác dụng</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>/block tiktok.com</code></td>
-      <td>Cấm truy cập tiktok.com trên máy con</td>
-    </tr>
-    <tr>
-      <td><code>/unblock tiktok.com</code></td>
-      <td>Bỏ cấm tiktok.com</td>
-    </tr>
-    <tr>
-      <td><code>/list</code></td>
-      <td>Xem danh sách trang web đang bị cấm</td>
-    </tr>
-    <tr>
-      <td><code>/report</code></td>
-      <td>Xem báo cáo sử dụng hôm nay ngay lập tức</td>
-    </tr>
-    <tr>
-      <td><code>/screenshot</code></td>
-      <td>Chụp màn hình ngay lập tức</td>
-    </tr>
-    <tr>
-      <td><code>/limit chrome 120</code></td>
-      <td>Giới hạn Chrome 120 phút/ngày</td>
-    </tr>
-    <tr>
-      <td><code>/unlimit chrome</code></td>
-      <td>Xóa giới hạn thời gian Chrome</td>
-    </tr>
-    <tr>
-      <td><code>/limits</code></td>
-      <td>Xem tất cả giới hạn và thời gian đã dùng</td>
-    </tr>
-    <tr>
-      <td><code>/deny chrome</code></td>
-      <td>Chặn Chrome ngay lập tức</td>
-    </tr>
-    <tr>
-      <td><code>/allow chrome</code></td>
-      <td>Mở lại Chrome</td>
-    </tr>
-    <tr>
-      <td><code>/apps</code></td>
-      <td>Xem danh sách app có thể giới hạn</td>
-    </tr>
-  </tbody>
-</table>
+  <div class="cmd-group-label">Chặn app</div>
+  <div class="cmd-list">
+    <div class="cmd-item">
+      <span class="cmd-code">/deny chrome</span>
+      <span class="cmd-desc">Chặn Chrome ngay lập tức</span>
+    </div>
+    <div class="cmd-item">
+      <span class="cmd-code">/allow chrome</span>
+      <span class="cmd-desc">Mở lại Chrome</span>
+    </div>
+    <div class="cmd-item">
+      <span class="cmd-code">/apps</span>
+      <span class="cmd-desc">Xem danh sách app có thể chặn</span>
+    </div>
+  </div>
+
+  <div class="cmd-group-label">Theo dõi</div>
+  <div class="cmd-list">
+    <div class="cmd-item">
+      <span class="cmd-code">/report</span>
+      <span class="cmd-desc">Báo cáo sử dụng hôm nay</span>
+    </div>
+    <div class="cmd-item">
+      <span class="cmd-code">/screenshot</span>
+      <span class="cmd-desc">Chụp màn hình ngay</span>
+    </div>
+  </div>
 </div>
 
-<h2>Báo cáo hàng ngày trông như thế nào?</h2>
-
-<div class="report-preview">📊 Báo cáo ngày 2026-09-05
+<!-- ═══ Report preview ═══ -->
+<div class="section">
+  <h2>Báo cáo hàng ngày</h2>
+  <div class="report-box">📊 Báo cáo ngày 2026-09-05
 
 🖥️ Tổng thời gian: 4h 32m
 
@@ -718,223 +874,267 @@
 🚫 Blocked domains: 2
 
 ⏰ App Limits:
-  🟢 chrome          1h 45m/2h 00m (còn 0h 15m)
-  🔴 minecraft       1h 00m/1h 00m (còn 0h 00m)</div>
-
-<h2>Giới hạn thời gian dùng app</h2>
-
-<p>Bạn có thể đặt giới hạn thời gian dùng hàng ngày cho từng app — trình duyệt (Chrome, Edge, Firefox...) hoặc game (Minecraft, Roblox, Steam...). Khi hết giờ, app tự động bị đóng và không cho mở lại cho đến ngày hôm sau.</p>
-
-<div class="card">
-  <div class="card-label">Ví dụ</div>
-  <h3>Giới hạn Chrome 2 tiếng/ngày</h3>
-  <p>Gửi: <code>/limit chrome 120</code><br>
-  Con dùng Chrome được 2 tiếng. Khi hết → Chrome tự đóng, mở lại cũng không được. Sáng hôm sau → tự reset, dùng tiếp 2 tiếng mới.</p>
+  🟢 chrome        1h 45m / 2h 00m (còn 15m)
+  🔴 minecraft     1h 00m / 1h 00m (hết giờ)</div>
 </div>
 
-<div class="card">
-  <div class="card-label">Chặn ngay lập tức</div>
-  <h3>Không cho dùng app ngay bây giờ</h3>
-  <p>Gửi: <code>/deny chrome</code><br>
-  Chrome bị đóng ngay và không cho mở lại. Muốn mở lại: <code>/allow chrome</code></p>
-</div>
+<!-- ═══ Time limits ═══ -->
+<div class="section">
+  <h2>Giới hạn thời gian dùng app</h2>
+  <p>Đặt giới hạn hàng ngày cho từng app — trình duyệt hoặc game. Khi hết giờ, app tự đóng và không cho mở lại cho đến ngày hôm sau.</p>
 
-<div class="tip-box">
-  <strong>Mẹo</strong>
-  <p>Gửi <code>/apps</code> để xem danh sách tên tắt: chrome, edge, firefox, minecraft, roblox, steam, epic, discord... Bạn cũng có thể dùng tên file .exe trực tiếp nếu app không nằm trong danh sách.</p>
-</div>
-
-<h2>Cài đặt (nhờ người biết IT)</h2>
-
-<div class="tip-box">
-  <strong>Lưu ý</strong>
-  <p>Phần cài đặt cần người có kiến thức IT. Sau khi cài xong, bạn chỉ cần dùng Telegram để điều khiển.</p>
-</div>
-
-<ol class="setup-steps">
-  <li>
-    <strong>Tạo Telegram Bot</strong>
-    Mở Telegram, tìm @BotFather, gửi lệnh /newbot, làm theo hướng dẫn. Ghi lại <em>Bot Token</em> và <em>Chat ID</em> của bạn.
-  </li>
-  <li>
-    <strong>Cài Python trên máy con</strong>
-    Tải từ python.org, cài đặt và chọn "Add to PATH".
-  </li>
-  <li>
-    <strong>Copy thư mục windows-monitor vào máy con</strong>
-    Đổi tên <code>config.example.json</code> thành <code>config.json</code>, điền Bot Token và Chat ID vào.
-  </li>
-  <li>
-    <strong>Chạy install.bat với quyền Administrator</strong>
-    Chuột phải → "Run as administrator". App sẽ tự cài và chạy.
-  </li>
-</ol>
-
-<div class="alert-box">
-  <strong>Quan trọng</strong>
-  <p>App cần chạy với quyền <strong>Administrator</strong> để có thể chặn website. Nếu không có quyền này, tính năng chặn web sẽ không hoạt động.</p>
-</div>
-
-<h2>Bảo vệ toàn diện: AdGuard DNS + SafeSearch</h2>
-
-<p>Windows Monitor chặn từng website cụ thể qua lệnh Telegram. Nhưng không thể liệt kê hết hàng triệu trang web xấu. Giải pháp: bật <strong>lọc DNS tự động</strong> — hệ thống sẽ tự chặn toàn bộ nội dung người lớn, cờ bạc, lừa đảo mà không cần bạn biết trước từng trang.</p>
-
-<h3>Tại sao cần thêm bước này?</h3>
-
-<div class="versus">
-  <div class="versus-side bad">
-    <div class="vs-label">Chỉ có Monitor</div>
-    <div class="vs-text">Chặn từng trang một<br>Phải biết trước tên web</div>
+  <div class="card">
+    <div class="card-eyebrow">Ví dụ</div>
+    <h3>Giới hạn Chrome 2 tiếng/ngày</h3>
+    <p>Gửi <code>/limit chrome 120</code> — con dùng Chrome được 2 tiếng. Khi hết → Chrome tự đóng, mở lại cũng không được. Sáng hôm sau → tự reset.</p>
   </div>
-  <div class="versus-arrow">→</div>
-  <div class="versus-side good">
-    <div class="vs-label">Monitor + DNS + SafeSearch</div>
-    <div class="vs-text">Tự chặn hàng triệu trang xấu<br>Google tự lọc kết quả tìm kiếm</div>
+
+  <div class="card">
+    <div class="card-eyebrow">Chặn ngay</div>
+    <h3>Không cho dùng app bây giờ</h3>
+    <p>Gửi <code>/deny chrome</code> — Chrome đóng ngay, không mở lại được. Muốn mở lại: <code>/allow chrome</code></p>
+  </div>
+
+  <div class="callout callout-tip">
+    <div class="callout-label">Mẹo</div>
+    <p>Gửi <code>/apps</code> để xem tên tắt: chrome, edge, firefox, minecraft, roblox, steam, epic, discord... Hoặc dùng tên .exe trực tiếp.</p>
   </div>
 </div>
 
-<h3>3 lớp bảo vệ chồng lên nhau</h3>
+<!-- ═══ Setup ═══ -->
+<div class="section">
+  <h2>Cài đặt</h2>
 
-<div class="layer-diagram">
-  <div class="layer">
-    <div class="layer-num">1</div>
-    <div class="layer-content">
-      <strong>AdGuard DNS Family</strong>
-      <span>Chặn tự động hàng triệu trang web người lớn, cờ bạc, malware ở cấp mạng — mọi app, mọi trình duyệt đều bị chặn</span>
+  <div class="callout callout-info">
+    <div class="callout-label">Lưu ý</div>
+    <p>Phần cài đặt cần người có kiến thức IT. Sau khi cài xong, bạn chỉ cần dùng Telegram.</p>
+  </div>
+
+  <ol class="steps">
+    <li>
+      <div>
+        <strong>Tạo Telegram Bot</strong>
+        <span>Mở Telegram, tìm @BotFather, gửi /newbot. Ghi lại Bot Token và Chat ID.</span>
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong>Cài Python trên máy con</strong>
+        <span>Tải từ python.org, chọn "Add to PATH" khi cài.</span>
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong>Copy thư mục windows-monitor</strong>
+        <span>Đổi <code>config.example.json</code> thành <code>config.json</code>, điền Bot Token và Chat ID.</span>
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong>Chạy install.bat</strong>
+        <span>Chuột phải → "Run as administrator". Nhập tên và mật khẩu tài khoản Admin khi được hỏi — app sẽ dùng thông tin này để chạy ngầm với quyền cao nhất.</span>
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong>Tạo tài khoản Standard cho con</strong>
+        <span>Settings → Accounts → Family → Add account → chọn Standard User. Con dùng tài khoản này sẽ không thể tắt app, gỡ cài đặt, hay thay đổi DNS.</span>
+      </div>
+    </li>
+  </ol>
+
+  <div class="callout callout-warn">
+    <div class="callout-label">Quan trọng</div>
+    <p>App chạy dưới quyền <strong>Administrator</strong> — standard user không thể tắt process, không thể gỡ cài đặt, không thể thay đổi cấu hình. Nếu app crash, tự khởi động lại sau 1 phút.</p>
+  </div>
+</div>
+
+<!-- ═══ DNS Protection ═══ -->
+<div class="section">
+  <h2>Bảo vệ toàn diện: AdGuard DNS</h2>
+  <p>Windows Monitor chặn từng website cụ thể. Nhưng không thể liệt kê hết hàng triệu trang xấu. Giải pháp: bật <strong>lọc DNS tự động</strong> — hệ thống tự chặn toàn bộ nội dung người lớn, cờ bạc, lừa đảo.</p>
+
+  <div class="compare">
+    <div class="compare-side compare-bad">
+      <div class="compare-tag">Chỉ Monitor</div>
+      <div class="compare-body">Chặn từng trang một<br>Phải biết trước tên web</div>
+    </div>
+    <div class="compare-side compare-good">
+      <div class="compare-tag">Monitor + DNS</div>
+      <div class="compare-body">Tự chặn triệu trang xấu<br>Google lọc kết quả tìm kiếm</div>
     </div>
   </div>
-  <div class="layer">
-    <div class="layer-num">2</div>
-    <div class="layer-content">
-      <strong>Google SafeSearch bắt buộc</strong>
-      <span>Kết quả tìm kiếm Google tự động lọc sạch nội dung nhạy cảm — con không thể tắt được</span>
+
+  <h3>3 lớp bảo vệ</h3>
+  <div class="layers">
+    <div class="layer-row">
+      <div class="layer-num">1</div>
+      <div class="layer-info">
+        <strong>AdGuard DNS Family</strong>
+        <span>Chặn tự động trang 18+, cờ bạc, malware — mọi app, mọi trình duyệt</span>
+      </div>
+    </div>
+    <div class="layer-row">
+      <div class="layer-num">2</div>
+      <div class="layer-info">
+        <strong>Google SafeSearch</strong>
+        <span>Lọc kết quả tìm kiếm nhạy cảm — con không tắt được</span>
+      </div>
+    </div>
+    <div class="layer-row">
+      <div class="layer-num">3</div>
+      <div class="layer-info">
+        <strong>Windows Monitor</strong>
+        <span>Chặn thêm web cụ thể + giới hạn thời gian + screenshot + báo cáo</span>
+      </div>
     </div>
   </div>
-  <div class="layer">
-    <div class="layer-num">3</div>
-    <div class="layer-content">
-      <strong>Windows Monitor</strong>
-      <span>Theo dõi + chặn thêm web cụ thể + screenshot + báo cáo cho bạn</span>
+
+  <h3>Thiết lập DNS</h3>
+  <div class="callout callout-warn">
+    <div class="callout-label">Chỉ 1 bước</div>
+    <p>Chạy file <code>setup-safe-dns.bat</code> với quyền Administrator. Chạy 1 lần — áp dụng vĩnh viễn cho mọi mạng WiFi.</p>
+  </div>
+
+  <p>Khác với cách vào Settings đặt DNS (chỉ áp dụng 1 mạng WiFi), script này cài đặt <strong>chính sách DNS cấp hệ thống</strong> — bất kể mạng nào, DNS luôn đi qua AdGuard Family.</p>
+
+  <p>File này tự động thiết lập:</p>
+  <div class="shields">
+    <div class="shield">
+      <div class="shield-icon">🌍</div>
+      <div class="shield-name">DNS toàn hệ thống</div>
+      <div class="shield-text">Mọi mạng WiFi, mạng dây đều đi qua AdGuard</div>
+    </div>
+    <div class="shield">
+      <div class="shield-icon">🔒</div>
+      <div class="shield-name">Khóa DNS trình duyệt</div>
+      <div class="shield-text">Chrome/Edge buộc dùng AdGuard DNS</div>
+    </div>
+    <div class="shield">
+      <div class="shield-icon">🔍</div>
+      <div class="shield-name">SafeSearch bắt buộc</div>
+      <div class="shield-text">Google Search tự lọc nội dung nhạy cảm</div>
+    </div>
+    <div class="shield">
+      <div class="shield-icon">👤</div>
+      <div class="shield-name">Tắt Guest / Ẩn danh</div>
+      <div class="shield-text">Không dùng Incognito để lách luật</div>
+    </div>
+    <div class="shield">
+      <div class="shield-icon">🌐</div>
+      <div class="shield-name">Chặn QUIC</div>
+      <div class="shield-text">Ngăn trình duyệt bypass lọc DNS</div>
+    </div>
+    <div class="shield">
+      <div class="shield-icon">🔎</div>
+      <div class="shield-name">Bing SafeSearch</div>
+      <div class="shield-text">Lọc ở mức nghiêm ngặt nhất</div>
+    </div>
+  </div>
+
+  <h3>Kiểm tra</h3>
+  <ol class="steps">
+    <li>
+      <div>
+        <strong>Mở <code>chrome://policy</code></strong>
+        <span>Thấy DnsOverHttpsMode, ForceGoogleSafeSearch với Level "Mandatory" → thành công</span>
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong>Tìm nội dung nhạy cảm trên Google</strong>
+        <span>Kết quả phải lọc sạch, thấy "SafeSearch is locked"</span>
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong>Truy cập trang 18+</strong>
+        <span>Phải bị chặn hoàn toàn — "This site can't be reached"</span>
+      </div>
+    </li>
+  </ol>
+
+  <h3>Firefox</h3>
+  <div class="card">
+    <div class="card-eyebrow">2 cách</div>
+    <h3>Gỡ Firefox hoặc cấu hình riêng</h3>
+    <p><strong>Cách 1 (đơn giản):</strong> Gỡ Firefox, chỉ cho dùng Chrome/Edge — đã được bảo vệ.<br>
+    <strong>Cách 2:</strong> Tạo file policy tại <code>C:\Program Files\Mozilla Firefox\distribution\policies.json</code></p>
+  </div>
+</div>
+
+<!-- ═══ FAQ ═══ -->
+<div class="section">
+  <h2>Câu hỏi thường gặp</h2>
+
+  <div class="faq-list">
+    <div class="faq-item">
+      <button class="faq-q">Con có biết app đang chạy không?</button>
+      <div class="faq-a">App chạy ngầm, không hiển thị cửa sổ. Tuy nhiên, nếu con biết mở Task Manager thì có thể thấy process Python đang chạy.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q">Con có thể tắt app không?</button>
+      <div class="faq-a">Không, nếu con dùng tài khoản Standard. App chạy dưới quyền Administrator — khi con mở Task Manager và thử End Task, sẽ bị "Access Denied". Nếu bằng cách nào đó app bị crash, nó tự khởi động lại sau 1 phút. Bạn cũng nhận tin nhắn "Monitor stopped" trên Telegram nếu app bị dừng.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q">Chế độ ẩn danh có lách được không?</button>
+      <div class="faq-a">Không. App đọc tên cửa sổ, không phụ thuộc cookie hay lịch sử. Ngoài ra, nếu đã chạy setup-safe-dns.bat thì chế độ Incognito bị tắt hoàn toàn.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q">Con có thể gỡ cài đặt app không?</button>
+      <div class="faq-a">Không, nếu con dùng tài khoản Standard. App chạy dưới quyền Admin, file nằm ở thư mục chỉ Admin mới xóa được, và Task Scheduler chỉ Admin mới sửa được. Rất quan trọng: tạo cho con tài khoản Standard, không cho dùng tài khoản Admin.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q">App có làm chậm máy không?</button>
+      <div class="faq-a">Không đáng kể. App rất nhẹ — kiểm tra cửa sổ mỗi 5 giây, chụp ảnh mỗi phút.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q">Dữ liệu có an toàn không?</button>
+      <div class="faq-a">Dữ liệu lưu trên máy con và gửi trực tiếp tới Telegram của bạn. Không qua server trung gian.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q">AdGuard DNS Family có mất phí không?</button>
+      <div class="faq-a">Hoàn toàn miễn phí, không cần tạo tài khoản. Mọi yêu cầu web đi qua máy chủ AdGuard — trang xấu (18+, cờ bạc, malware) bị chặn tự động.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q">Con có thể đổi DNS để bypass không?</button>
+      <div class="faq-a">Không. DNS được áp dụng bằng chính sách cấp hệ thống (NRPT) — con không thể thay đổi dù vào Settings hay đổi WiFi. Chrome/Edge cũng bị khóa cứng. Cần quyền Administrator mới gỡ được.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q">Giới hạn thời gian có reset khi tắt máy không?</button>
+      <div class="faq-a">Không. Thời gian sử dụng lưu trong database. Tắt máy rồi mở lại vẫn tính tiếp. Chỉ reset lúc 0 giờ đêm mỗi ngày.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q">Con có thể mở lại app bị giới hạn không?</button>
+      <div class="faq-a">Không. App sử dụng cơ chế cấp hệ thống (IFEO) — con không mở lại được dù click icon, Start Menu, hay Task Manager. Cần quyền Administrator.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q">SafeSearch có lọc được YouTube không?</button>
+      <div class="faq-a">Google SafeSearch chỉ lọc kết quả tìm kiếm. Để lọc YouTube, bật Restricted Mode hoặc dùng AdGuard DNS Family — cũng lọc một phần nội dung 18+ trên YouTube.</div>
     </div>
   </div>
 </div>
-
-<h3>Cách thiết lập (nhờ người biết IT)</h3>
-
-<div class="tip-box">
-  <strong>Lưu ý</strong>
-  <p>Tất cả các bước dưới đây cần quyền Administrator trên máy con. Sau khi thiết lập xong, con không thể tự thay đổi nếu dùng tài khoản Standard.</p>
-</div>
-
-<h3>Chỉ cần chạy 1 file duy nhất</h3>
-
-<div class="alert-box">
-  <strong>Quan trọng</strong>
-  <p>Nhờ người biết IT chạy file <code>setup-safe-dns.bat</code> với quyền Administrator. File này nằm trong thư mục <code>windows-monitor</code>. Chạy 1 lần là xong — áp dụng vĩnh viễn cho mọi mạng WiFi.</p>
-</div>
-
-<p>Khác với cách vào Settings đặt DNS thủ công (chỉ áp dụng cho 1 mạng WiFi), script này cài đặt <strong>chính sách DNS cấp hệ thống</strong> — bất kể con kết nối WiFi nhà, WiFi quán cà phê, hay mạng dây, DNS luôn đi qua AdGuard Family.</p>
-
-<p>File này tự động thiết lập:</p>
-
-<div class="shield-grid">
-  <div class="shield-item">
-    <div class="shield-icon">🌍</div>
-    <div class="shield-title">DNS toàn hệ thống</div>
-    <p>Mọi mạng WiFi, mạng dây đều đi qua AdGuard — đổi mạng vẫn bị chặn</p>
-  </div>
-  <div class="shield-item">
-    <div class="shield-icon">🔒</div>
-    <div class="shield-title">Khóa DNS trình duyệt</div>
-    <p>Chrome và Edge buộc dùng AdGuard DNS, không thể tự đổi trong Settings</p>
-  </div>
-  <div class="shield-item">
-    <div class="shield-icon">🔍</div>
-    <div class="shield-title">SafeSearch bắt buộc</div>
-    <p>Google Search tự lọc kết quả nhạy cảm, con không tắt được</p>
-  </div>
-  <div class="shield-item">
-    <div class="shield-icon">👤</div>
-    <div class="shield-title">Tắt Guest / Ẩn danh</div>
-    <p>Không cho dùng chế độ Khách hoặc Incognito để lách luật</p>
-  </div>
-  <div class="shield-item">
-    <div class="shield-icon">🌐</div>
-    <div class="shield-title">Chặn giao thức QUIC</div>
-    <p>Ngăn trình duyệt dùng giao thức riêng để bypass lọc DNS</p>
-  </div>
-  <div class="shield-item">
-    <div class="shield-icon">🔎</div>
-    <div class="shield-title">Bing SafeSearch</div>
-    <p>Kết quả tìm kiếm Bing cũng bị lọc ở mức nghiêm ngặt nhất</p>
-  </div>
-</div>
-
-<h3>Kiểm tra đã hoạt động</h3>
-
-<ol class="setup-steps">
-  <li>
-    <strong>Mở Chrome, gõ vào thanh địa chỉ: <code>chrome://policy</code></strong>
-    Nếu thấy các dòng DnsOverHttpsMode, ForceGoogleSafeSearch với Level là "Mandatory" → thành công.
-  </li>
-  <li>
-    <strong>Thử tìm kiếm nội dung nhạy cảm trên Google</strong>
-    Kết quả phải được lọc sạch. Nếu thấy dòng "SafeSearch is locked" ở đầu trang → đúng rồi.
-  </li>
-  <li>
-    <strong>Thử truy cập một trang 18+ bất kỳ</strong>
-    Trang phải bị chặn hoàn toàn — hiển thị lỗi "This site can't be reached".
-  </li>
-</ol>
-
-<h3>Còn Firefox thì sao?</h3>
-
-<p>Firefox không dùng Registry Policy của Windows. Cách xử lý:</p>
-
-<div class="card">
-  <div class="card-label">2 lựa chọn</div>
-  <h3>Gỡ Firefox hoặc cấu hình riêng</h3>
-  <p><strong>Cách 1 (đơn giản):</strong> Gỡ Firefox, chỉ cho con dùng Chrome hoặc Edge — đã được bảo vệ bởi policy.<br>
-  <strong>Cách 2:</strong> Tạo file policy cho Firefox tại <code>C:\Program Files\Mozilla Firefox\distribution\policies.json</code> — xem hướng dẫn trong DEV_GUIDE.md.</p>
-</div>
-
-<h2>Câu hỏi thường gặp</h2>
-
-<dl class="faq">
-  <dt>Con có biết app đang chạy không?</dt>
-  <dd>App chạy ngầm, không hiển thị cửa sổ. Tuy nhiên, nếu con biết mở Task Manager thì có thể thấy process Python đang chạy.</dd>
-
-  <dt>Nếu con tắt app thì sao?</dt>
-  <dd>App được cài vào Task Scheduler — nếu bị tắt, nó sẽ tự khởi động lại khi con đăng nhập Windows lần sau. Bạn cũng sẽ nhận tin nhắn "Monitor stopped" trên Telegram nếu app bị dừng.</dd>
-
-  <dt>App có hoạt động khi con dùng chế độ ẩn danh (Incognito)?</dt>
-  <dd>Có, vẫn hoạt động. App đọc tên cửa sổ, không phụ thuộc vào cookie hay lịch sử trình duyệt. Tuy nhiên, một số trang web có thể hiển thị tên chung chung hơn trong chế độ ẩn danh.</dd>
-
-  <dt>Con có thể gỡ cài đặt app không?</dt>
-  <dd>Nếu con có tài khoản Administrator trên máy thì có thể. Nên tạo cho con tài khoản Windows kiểu Standard (không phải Admin) để hạn chế điều này.</dd>
-
-  <dt>App có làm chậm máy không?</dt>
-  <dd>Không đáng kể. App rất nhẹ, chỉ kiểm tra cửa sổ đang mở mỗi 5 giây và chụp ảnh mỗi phút.</dd>
-
-  <dt>Dữ liệu có an toàn không?</dt>
-  <dd>Dữ liệu được lưu trên máy con (file database) và gửi trực tiếp tới Telegram của bạn. Không qua server trung gian nào khác.</dd>
-
-  <dt>AdGuard DNS Family là gì? Có mất phí không?</dt>
-  <dd>Là dịch vụ lọc DNS miễn phí của AdGuard. Mọi yêu cầu truy cập web đều đi qua máy chủ của họ — nếu là trang xấu (18+, cờ bạc, malware) thì bị chặn tự động. Hoàn toàn miễn phí, không cần tạo tài khoản.</dd>
-
-  <dt>Con có thể tự đổi DNS để bypass không?</dt>
-  <dd>Không. DNS được áp dụng bằng chính sách cấp hệ thống (NRPT) — con không thể thay đổi dù vào Settings hay đổi sang WiFi khác. Trong Chrome/Edge, registry policy cũng khóa cứng DNS — kể cả vào chrome://settings cũng không đổi được. Tất cả đều cần quyền Administrator mới gỡ được.</dd>
-
-  <dt>Giới hạn thời gian có bị reset khi tắt máy không?</dt>
-  <dd>Không. Thời gian sử dụng được lưu trong database. Nếu con tắt máy rồi mở lại, thời gian đã dùng vẫn được tính tiếp. Giới hạn chỉ reset lúc 0 giờ đêm mỗi ngày.</dd>
-
-  <dt>Con có thể mở lại app bị giới hạn không?</dt>
-  <dd>Không. App sử dụng cơ chế cấp hệ thống (IFEO) để chặn — con không thể mở lại dù click vào icon, tìm trong Start Menu, hay dùng Task Manager. Cần quyền Administrator mới gỡ được.</dd>
-
-  <dt>SafeSearch có lọc được YouTube không?</dt>
-  <dd>Google SafeSearch chỉ lọc kết quả tìm kiếm Google. Để lọc nội dung YouTube, bạn nên bật Restricted Mode trên YouTube (hoặc dùng AdGuard DNS Family — nó cũng lọc một phần nội dung 18+ trên YouTube).</dd>
-</dl>
 
 <footer>
   Windows Monitor &middot; Parental Control qua Telegram
 </footer>
+
+<script>
+  document.querySelectorAll('.faq-q').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var item = this.parentElement;
+      var wasOpen = item.classList.contains('open');
+      item.classList.toggle('open');
+    });
+  });
+</script>

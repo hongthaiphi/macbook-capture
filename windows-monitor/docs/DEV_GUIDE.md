@@ -86,9 +86,32 @@ Builds the daily report by querying SQLite:
 `ReportScheduler` checks every minute if it's the configured hour and hasn't sent today's report yet.
 
 ### main.py
-Entry point. Initializes everything, starts the Telegram bot's polling, creates three async tasks (tracker, screenshot, report scheduler), and waits for shutdown signal (Ctrl+C or SIGTERM).
+Entry point. Initializes everything, starts the Telegram bot's polling, creates four async tasks (tracker, screenshot, report scheduler, midnight reset loop), and waits for shutdown signal (Ctrl+C or SIGTERM).
 
 Sends a "started" message on boot and "stopped" on clean shutdown.
+
+## Process Protection
+
+The monitor runs as an **elevated process** under the admin account via Task Scheduler. This means:
+
+- **Standard users cannot kill it** — Task Manager shows "Access Denied" when trying to end the process
+- **Auto-restart on crash** — Task Scheduler restarts the process after 1 minute, up to 3 retries
+- **Survives logoff** — triggered on any user logon, runs regardless of which user logs in
+- **Desktop access** — because the task triggers on logon (not startup), it runs in the user's desktop session and can capture screenshots via `mss`
+
+### install.bat Flow
+
+1. Checks for Administrator privileges (`net session`)
+2. Installs Python dependencies
+3. Prompts for admin username/password
+4. Creates scheduled task: `schtasks /create /tn "WindowsMonitor" /sc onlogon /ru <admin> /rp <pass> /rl highest`
+5. Configures auto-restart via PowerShell (`Set-ScheduledTask` with `RestartCount 3, RestartInterval 1min`)
+6. Sets working directory to the monitor folder
+7. Starts the monitor immediately
+
+### Why not SYSTEM account?
+
+Running as `NT AUTHORITY\SYSTEM` would provide even stronger protection, but SYSTEM processes run in Session 0 (services session), which is isolated from the user's desktop. This means `GetForegroundWindow()`, `GetWindowTextW()`, and `mss` screenshot capture would all fail — they need to be in the user's desktop session.
 
 ## Data Flow
 
