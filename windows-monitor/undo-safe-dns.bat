@@ -28,13 +28,18 @@ powershell -Command "Get-NetAdapter | ForEach-Object { Set-DnsClientServerAddres
 echo Done.
 
 echo Removing Firefox policies...
-set FF_PATH=C:\Program Files\Mozilla Firefox
-if exist "%FF_PATH%\distribution\policies.json" (
-    del "%FF_PATH%\distribution\policies.json"
-    echo Firefox policy removed.
-) else (
-    echo No Firefox policy found.
+reg delete "HKLM\SOFTWARE\Policies\Mozilla\Firefox" /f >nul 2>&1
+for %%P in (
+    "C:\Program Files\Mozilla Firefox"
+    "C:\Program Files (x86)\Mozilla Firefox"
+    "%LOCALAPPDATA%\Mozilla Firefox"
+) do (
+    if exist "%%~P\distribution\policies.json" (
+        del "%%~P\distribution\policies.json"
+        echo    Removed policies.json from %%~P
+    )
 )
+echo Done.
 
 echo Flushing DNS cache...
 ipconfig /flushdns >nul

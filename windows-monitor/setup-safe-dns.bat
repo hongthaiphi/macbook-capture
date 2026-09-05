@@ -76,34 +76,51 @@ echo    Done.
 
 echo [5/6] Setting up Firefox policy (if installed)...
 
-:: Firefox uses a JSON policy file instead of registry
-set FF_PATH=C:\Program Files\Mozilla Firefox
-if exist "%FF_PATH%\firefox.exe" (
-    if not exist "%FF_PATH%\distribution" mkdir "%FF_PATH%\distribution"
-    (
-        echo {
-        echo   "policies": {
-        echo     "DNSOverHTTPS": {
-        echo       "Enabled": true,
-        echo       "ProviderURL": "https://family.adguard-dns.com/dns-query",
-        echo       "Locked": true
-        echo     },
-        echo     "SearchEngines": {
-        echo       "Default": "Google"
-        echo     },
-        echo     "DisablePrivateBrowsing": true,
-        echo     "Preferences": {
-        echo       "network.trr.mode": {
-        echo         "Value": 3,
-        echo         "Status": "locked"
-        echo       }
-        echo     }
-        echo   }
-        echo }
-    ) > "%FF_PATH%\distribution\policies.json"
-    echo    Firefox policies applied.
-) else (
-    echo    Firefox not found at %FF_PATH% - skipping.
+:: Firefox: registry policy (works from Firefox 78+, same as Chrome/Edge approach)
+reg add "HKLM\SOFTWARE\Policies\Mozilla\Firefox\DNSOverHTTPS" /v Enabled /t REG_DWORD /d 1 /f >nul
+reg add "HKLM\SOFTWARE\Policies\Mozilla\Firefox\DNSOverHTTPS" /v ProviderURL /t REG_SZ /d "https://family.adguard-dns.com/dns-query" /f >nul
+reg add "HKLM\SOFTWARE\Policies\Mozilla\Firefox\DNSOverHTTPS" /v Locked /t REG_DWORD /d 1 /f >nul
+reg add "HKLM\SOFTWARE\Policies\Mozilla\Firefox" /v DisablePrivateBrowsing /t REG_DWORD /d 1 /f >nul
+reg add "HKLM\SOFTWARE\Policies\Mozilla\Firefox\Preferences" /v "network.trr.mode" /t REG_DWORD /d 3 /f >nul
+echo    Firefox registry policies applied.
+
+:: Firefox: also write policies.json (belt and suspenders)
+set FF_FOUND=0
+for %%P in (
+    "C:\Program Files\Mozilla Firefox"
+    "C:\Program Files (x86)\Mozilla Firefox"
+    "%LOCALAPPDATA%\Mozilla Firefox"
+    "%PROGRAMFILES%\Mozilla Firefox"
+) do (
+    if exist "%%~P\firefox.exe" (
+        if not exist "%%~P\distribution" mkdir "%%~P\distribution"
+        (
+            echo {
+            echo   "policies": {
+            echo     "DNSOverHTTPS": {
+            echo       "Enabled": true,
+            echo       "ProviderURL": "https://family.adguard-dns.com/dns-query",
+            echo       "Locked": true
+            echo     },
+            echo     "SearchEngines": {
+            echo       "Default": "Google"
+            echo     },
+            echo     "DisablePrivateBrowsing": true,
+            echo     "Preferences": {
+            echo       "network.trr.mode": {
+            echo         "Value": 3,
+            echo         "Status": "locked"
+            echo       }
+            echo     }
+            echo   }
+            echo }
+        ) > "%%~P\distribution\policies.json"
+        echo    Firefox policies.json written to %%~P
+        set FF_FOUND=1
+    )
+)
+if "%FF_FOUND%"=="0" (
+    echo    Firefox install folder not found - registry policy still active.
 )
 
 echo [6/6] Flushing DNS cache...
