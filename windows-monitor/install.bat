@@ -105,12 +105,7 @@ schtasks /delete /tn "WindowsMonitor" /f >nul 2>&1
 taskkill /f /im pythonw.exe /fi "WINDOWTITLE eq monitor" >nul 2>&1
 
 :: Use PowerShell to create task with proper working directory
-powershell -Command ^
-    "$action = New-ScheduledTaskAction -Execute '%PYTHONW_PATH%' -Argument '-m monitor' -WorkingDirectory '%MONITOR_DIR%'; ^
-     $trigger = New-ScheduledTaskTrigger -AtLogOn; ^
-     $settings = New-ScheduledTaskSettingsSet -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -ExecutionTimeLimit 0; ^
-     $task = Register-ScheduledTask -TaskName 'WindowsMonitor' -Action $action -Trigger $trigger -Settings $settings -User '%ADMIN_USER%' -Password '%ADMIN_PASS%' -RunLevel Highest -Force; ^
-     if ($task) { Write-Host 'Task created successfully.'; Write-Host 'WorkingDirectory:' $task.Actions[0].WorkingDirectory } else { Write-Host 'ERROR: Task creation failed'; exit 1 }"
+powershell -Command "$action = New-ScheduledTaskAction -Execute '%PYTHONW_PATH%' -Argument '-m monitor' -WorkingDirectory '%MONITOR_DIR%'; $trigger = New-ScheduledTaskTrigger -AtLogOn; $settings = New-ScheduledTaskSettingsSet -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -ExecutionTimeLimit 0; $task = Register-ScheduledTask -TaskName 'WindowsMonitor' -Action $action -Trigger $trigger -Settings $settings -User '%ADMIN_USER%' -Password '%ADMIN_PASS%' -RunLevel Highest -Force; if ($task) { Write-Host 'Task created successfully.'; Write-Host 'WorkingDirectory:' $task.Actions[0].WorkingDirectory } else { Write-Host 'ERROR: Task creation failed'; exit 1 }"
 
 if %errorlevel% neq 0 (
     echo.
@@ -126,15 +121,7 @@ echo.
 
 :: Verify task was created correctly
 echo Verifying task...
-powershell -Command ^
-    "$t = Get-ScheduledTask -TaskName 'WindowsMonitor' -ErrorAction SilentlyContinue; ^
-     if ($t) { ^
-         Write-Host '  Status:' $t.State; ^
-         Write-Host '  Execute:' $t.Actions[0].Execute; ^
-         Write-Host '  Arguments:' $t.Actions[0].Arguments; ^
-         Write-Host '  WorkDir:' $t.Actions[0].WorkingDirectory; ^
-         Write-Host '  RunAs:' $t.Principal.UserId ^
-     } else { Write-Host 'ERROR: Task not found after creation!' }"
+powershell -Command "$t = Get-ScheduledTask -TaskName 'WindowsMonitor' -ErrorAction SilentlyContinue; if ($t) { Write-Host '  Status:' $t.State; Write-Host '  Execute:' $t.Actions[0].Execute; Write-Host '  Arguments:' $t.Actions[0].Arguments; Write-Host '  WorkDir:' $t.Actions[0].WorkingDirectory; Write-Host '  RunAs:' $t.Principal.UserId } else { Write-Host 'ERROR: Task not found after creation!' }"
 
 echo.
 
