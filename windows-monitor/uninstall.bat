@@ -9,9 +9,14 @@ echo Removing scheduled task...
 schtasks /delete /tn "WindowsMonitor" /f >nul 2>&1
 echo Done.
 
+:: Remove registry auto-start
+echo Removing registry auto-start...
+reg delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "WindowsMonitor" /f >nul 2>&1
+echo Done.
+
 :: Kill running process
 echo Stopping monitor process...
-taskkill /f /im pythonw.exe /fi "WINDOWTITLE eq monitor*" >nul 2>&1
+taskkill /f /im pythonw.exe >nul 2>&1
 
 :: Clean hosts file
 echo Cleaning hosts file...

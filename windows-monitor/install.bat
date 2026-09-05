@@ -47,7 +47,6 @@ if not exist config.json (
 
 :: Get paths
 set MONITOR_DIR=%~dp0
-:: Remove trailing backslash for cleaner paths
 if "%MONITOR_DIR:~-1%"=="\" set MONITOR_DIR=%MONITOR_DIR:~0,-1%
 
 for %%I in (python.exe) do set PYTHON_PATH=%%~$PATH:I
@@ -65,85 +64,86 @@ echo ========================================
 echo  DEBUG INFO
 echo ========================================
 echo  MONITOR_DIR: %MONITOR_DIR%
-echo  PYTHON_PATH: %PYTHON_PATH%
 echo  PYTHONW_PATH: %PYTHONW_PATH%
 echo.
 
-:: Quick test — verify monitor can at least import
+:: Quick test
 echo Testing monitor import...
 python -c "from monitor.config import load_config; print('OK: config loads')"
 if %errorlevel% neq 0 (
     echo ERROR: Monitor package cannot be imported.
-    echo Make sure you are running install.bat from the windows-monitor folder.
     pause
     exit /b 1
 )
 echo.
 
-echo ========================================
-echo  Task Scheduler Setup
-echo ========================================
-echo.
-echo De monitor khong bi tat boi user Standard,
-echo task se chay duoi tai khoan Administrator.
-echo.
-echo Nhap thong tin tai khoan ADMIN cua may tinh nay:
-echo (tai khoan dang dung de chay install.bat)
-echo.
-
-:: Get admin credentials for Task Scheduler
-set /p ADMIN_USER=Admin username (vd: Admin, %USERNAME%):
-set /p ADMIN_PASS=Admin password:
-
-echo.
-echo Creating scheduled task...
-
-:: Remove old task if exists
+:: Kill existing monitor
+echo Stopping existing monitor...
+taskkill /f /im pythonw.exe >nul 2>&1
 schtasks /delete /tn "WindowsMonitor" /f >nul 2>&1
+timeout /t 2 >nul
 
-:: Kill existing monitor process
-taskkill /f /im pythonw.exe /fi "WINDOWTITLE eq monitor" >nul 2>&1
+echo ========================================
+echo  Setting up auto-start (2 layers)
+echo ========================================
+echo.
 
-:: Use PowerShell to create task with proper working directory
-:: Step 1: Register with User/Password, Step 2: Update principal to InteractiveOrPassword
-powershell -Command "$action = New-ScheduledTaskAction -Execute '%PYTHONW_PATH%' -Argument '-m monitor' -WorkingDirectory '%MONITOR_DIR%'; $trigger = New-ScheduledTaskTrigger -AtLogOn; $settings = New-ScheduledTaskSettingsSet -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -ExecutionTimeLimit 0; Register-ScheduledTask -TaskName 'WindowsMonitor' -Action $action -Trigger $trigger -Settings $settings -User '%ADMIN_USER%' -Password '%ADMIN_PASS%' -RunLevel Highest -Force | Out-Null; $t = Get-ScheduledTask -TaskName 'WindowsMonitor'; $t.Principal.LogonType = 'InteractiveOrPassword'; Set-ScheduledTask -InputObject $t -User '%ADMIN_USER%' -Password '%ADMIN_PASS%' | Out-Null; $t2 = Get-ScheduledTask -TaskName 'WindowsMonitor'; Write-Host 'Task created successfully.'; Write-Host 'WorkingDirectory:' $t2.Actions[0].WorkingDirectory; Write-Host 'LogonType:' $t2.Principal.LogonType"
+:: ===== LAYER 1: Task Scheduler =====
+:: Runs as BUILTIN\Users group = runs as whoever logs in = runs in THEIR desktop session
+:: Can capture screenshots because it's in the interactive session
+:: Auto-restart if killed (up to 999 times, every 1 minute)
+echo [1/2] Creating Task Scheduler task...
+powershell -Command "$action = New-ScheduledTaskAction -Execute '%PYTHONW_PATH%' -Argument '-m monitor' -WorkingDirectory '%MONITOR_DIR%'; $trigger = New-ScheduledTaskTrigger -AtLogOn; $principal = New-ScheduledTaskPrincipal -GroupId 'BUILTIN\Users' -RunLevel Limited; $settings = New-ScheduledTaskSettingsSet -RestartCount 999 -RestartInterval (New-TimeSpan -Minutes 1) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -ExecutionTimeLimit 0 -MultipleInstances IgnoreNew; Register-ScheduledTask -TaskName 'WindowsMonitor' -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Force | Out-Null; $t = Get-ScheduledTask -TaskName 'WindowsMonitor'; Write-Host '  OK - LogonType:' $t.Principal.LogonType 'RunLevel:' $t.Principal.RunLevel; Write-Host '  WorkDir:' $t.Actions[0].WorkingDirectory"
 
 if %errorlevel% neq 0 (
-    echo.
-    echo ERROR: Khong tao duoc scheduled task.
-    echo Kiem tra lai username va password.
-    echo.
-    echo Ban van co the chay thu bang: python -m monitor
-    pause
-    exit /b 1
+    echo  FAILED - Task Scheduler setup failed.
+) else (
+    echo  Task auto-restarts up to 999 times if killed.
+)
+echo.
+
+:: ===== LAYER 2: Registry Run key =====
+:: HKLM\...\Run = runs for ALL users on login
+:: Standard users CANNOT modify HKLM registry = cannot disable this
+echo [2/2] Adding registry auto-start...
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "WindowsMonitor" /t REG_SZ /d "\"%PYTHONW_PATH%\" -m monitor" /f >nul
+
+if %errorlevel%==0 (
+    echo  OK - Registry auto-start added (HKLM, standard users cannot remove).
+) else (
+    echo  FAILED - Registry auto-start failed.
+)
+echo.
+
+:: ===== Set working directory for registry method =====
+:: The registry Run key doesn't support working directory, so we need a wrapper
+:: Create a small .bat launcher that cd's first
+> "%MONITOR_DIR%\start-monitor.bat" (
+    echo @echo off
+    echo cd /d "%MONITOR_DIR%"
+    echo start "" "%PYTHONW_PATH%" -m monitor
 )
 
+:: Update registry to use the wrapper
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "WindowsMonitor" /t REG_SZ /d "\"%MONITOR_DIR%\start-monitor.bat\"" /f >nul
+
+echo ========================================
+echo  Starting monitor now...
+echo ========================================
 echo.
 
-:: Verify task was created correctly
-echo Verifying task...
-powershell -Command "$t = Get-ScheduledTask -TaskName 'WindowsMonitor' -ErrorAction SilentlyContinue; if ($t) { Write-Host '  Status:' $t.State; Write-Host '  Execute:' $t.Actions[0].Execute; Write-Host '  Arguments:' $t.Actions[0].Arguments; Write-Host '  WorkDir:' $t.Actions[0].WorkingDirectory; Write-Host '  RunAs:' $t.Principal.UserId } else { Write-Host 'ERROR: Task not found after creation!' }"
-
-echo.
-
-:: Start task via Task Scheduler (runs independently, survives CMD close)
-echo Starting monitor via Task Scheduler...
+:: Start via Task Scheduler (independent of this CMD window)
 schtasks /run /tn "WindowsMonitor"
 
-:: Wait a moment then check if it's running
+:: Wait and verify
 timeout /t 5 >nul
-tasklist | findstr /i "pythonw.exe monitor.exe" >nul 2>&1
+tasklist | findstr /i "pythonw.exe python.exe" >nul 2>&1
 if not errorlevel 1 (
-    echo Monitor is running via Task Scheduler, independent of this window.
+    echo Monitor is running.
 ) else (
-    echo.
-    echo WARNING: Monitor does not appear to be running.
-    echo Check monitor.log for details:
-    echo   type "%MONITOR_DIR%\monitor.log"
-    echo.
-    echo Or run manually to see errors:
-    echo   cd /d "%MONITOR_DIR%"
-    echo   python -m monitor
+    echo WARNING: Monitor may not be running.
+    echo Check: type "%MONITOR_DIR%\monitor.log"
+    echo Or run manually: cd /d "%MONITOR_DIR%" ^& python -m monitor
 )
 
 echo.
@@ -151,22 +151,26 @@ echo ========================================
 echo  Installation complete!
 echo ========================================
 echo.
-echo  - Monitor dang chay ngam.
-echo  - Tu dong khoi dong khi bat ky user nao dang nhap.
-echo  - Standard user KHONG the tat duoc process.
-echo  - Neu process bi crash, tu dong restart sau 1 phut.
-echo  - Log file: %MONITOR_DIR%\monitor.log
+echo  Protection layers:
+echo  [1] Task Scheduler - auto-start on logon, auto-restart if killed
+echo      (restarts within 1 minute, up to 999 times)
+echo  [2] Registry HKLM\Run - backup auto-start, standard users
+echo      CANNOT remove this registry key
 echo.
-echo  Dieu khien qua Telegram bot.
+echo  - Log file: %MONITOR_DIR%\monitor.log
+echo  - Invisible process (pythonw, no window)
+echo  - Dieu khien qua Telegram bot
 echo.
 echo ========================================
 echo  QUAN TRONG: Tao tai khoan Standard cho con
 echo ========================================
 echo.
-echo  De bao ve toi da, hay tao tai khoan Windows
-echo  kieu Standard (khong phai Admin) cho con:
-echo.
 echo  Settings ^> Accounts ^> Family ^> Add account
 echo  Chon "Standard User" (khong phai Administrator)
+echo.
+echo  Standard user:
+echo  - Khong xoa duoc registry auto-start
+echo  - Neu tat process, tu dong restart sau 1 phut
+echo  - Khong thay cua so nao (pythonw chay an)
 echo.
 pause
