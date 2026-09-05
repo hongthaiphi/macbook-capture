@@ -19,6 +19,12 @@ powershell -Command "(Get-Content 'C:\Windows\System32\drivers\etc\hosts') | Whe
 ipconfig /flushdns >nul 2>&1
 echo Done.
 
+:: Remove browser URLBlocklist policies
+echo Removing browser blocklist policies...
+reg delete "HKLM\SOFTWARE\Policies\Google\Chrome\URLBlocklist" /f >nul 2>&1
+reg delete "HKLM\SOFTWARE\Policies\Microsoft\Edge\URLBlocklist" /f >nul 2>&1
+echo Done.
+
 echo.
 echo ========================================
 echo  Uninstall complete.

@@ -7,7 +7,7 @@ from .config import load_config
 from .db import init_db
 from .tracker import Tracker, get_idle_seconds
 from .screenshot import ScreenshotLoop
-from .blocker import TelegramBot, _sync_hosts_file
+from .blocker import TelegramBot, _sync_all
 from .reporter import ReportScheduler, send_blocked_alert
 
 logging.basicConfig(
@@ -49,7 +49,7 @@ async def main():
     screenshot_loop = ScreenshotLoop(config, bot, get_idle_seconds)
     report_scheduler = ReportScheduler(config, bot)
 
-    _sync_hosts_file()
+    _sync_all()
 
     await bot.send_message(chat_id=chat_id, text="🟢 Windows Monitor started")
 

@@ -1,5 +1,6 @@
 import subprocess
 import logging
+import winreg
 from pathlib import Path
 
 from telegram import Update
@@ -13,6 +14,9 @@ logger = logging.getLogger(__name__)
 
 HOSTS_PATH = Path(r"C:\Windows\System32\drivers\etc\hosts")
 MARKER = "# MONITOR-BLOCKED"
+
+CHROME_BLOCKLIST_KEY = r"SOFTWARE\Policies\Google\Chrome\URLBlocklist"
+EDGE_BLOCKLIST_KEY = r"SOFTWARE\Policies\Microsoft\Edge\URLBlocklist"
 
 
 def _flush_dns():
@@ -50,6 +54,46 @@ def _sync_hosts_file():
         return False
 
 
+def _sync_browser_blocklist():
+    """Write blocked domains to Chrome and Edge URLBlocklist registry policies.
+
+    This works even when browsers use DNS-over-HTTPS, because URLBlocklist
+    is enforced at the browser level before any network request is made.
+    """
+    blocked = db.list_blocked_domains()
+
+    for key_path in (CHROME_BLOCKLIST_KEY, EDGE_BLOCKLIST_KEY):
+        try:
+            winreg.DeleteKey(winreg.HKEY_LOCAL_MACHINE, key_path)
+        except FileNotFoundError:
+            pass
+        except PermissionError:
+            logger.error("Cannot write registry — run as administrator")
+            return False
+
+        if not blocked:
+            continue
+
+        try:
+            key = winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE, key_path)
+            for i, domain in enumerate(blocked, start=1):
+                winreg.SetValueEx(key, str(i), 0, winreg.REG_SZ, domain)
+            winreg.CloseKey(key)
+        except PermissionError:
+            logger.error("Cannot write registry — run as administrator")
+            return False
+
+    logger.info("Browser URLBlocklist updated: %d domains", len(blocked))
+    return True
+
+
+def _sync_all():
+    """Sync both hosts file (for non-browser apps) and browser policies."""
+    hosts_ok = _sync_hosts_file()
+    browser_ok = _sync_browser_blocklist()
+    return hosts_ok or browser_ok
+
+
 class TelegramBot:
     def __init__(self, config: dict):
         self.config = config
@@ -82,11 +126,11 @@ class TelegramBot:
 
         domain = context.args[0].lower().strip()
         if db.add_blocked_domain(domain):
-            ok = _sync_hosts_file()
+            ok = _sync_all()
             if ok:
-                await update.message.reply_text(f"✅ Blocked: {domain}")
+                await update.message.reply_text(f"✅ Blocked: {domain}\n(hosts file + Chrome/Edge policy)")
             else:
-                await update.message.reply_text(f"⚠️ Added to DB but hosts file update failed (need admin rights)")
+                await update.message.reply_text(f"⚠️ Added to DB but system update failed (need admin rights)")
         else:
             await update.message.reply_text(f"ℹ️ Already blocked: {domain}")
 
@@ -99,7 +143,7 @@ class TelegramBot:
 
         domain = context.args[0].lower().strip()
         if db.remove_blocked_domain(domain):
-            _sync_hosts_file()
+            _sync_all()
             await update.message.reply_text(f"✅ Unblocked: {domain}")
         else:
             await update.message.reply_text(f"ℹ️ Not in blocked list: {domain}")
