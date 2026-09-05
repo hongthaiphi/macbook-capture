@@ -57,13 +57,24 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v ForceBingSafeSearch /t REG_DW
 
 echo    Done.
 
-echo [3/5] Setting system DNS to AdGuard Family...
+echo [3/6] Setting system-wide DNS policy (NRPT)...
 
-:: Set DNS for all network adapters via PowerShell
-powershell -Command "Get-NetAdapter | Where-Object { $_.Status -eq 'Up' } | ForEach-Object { Set-DnsClientServerAddress -InterfaceIndex $_.ifIndex -ServerAddresses ('94.140.14.15','94.140.15.16') }"
+:: NRPT forces ALL DNS queries through AdGuard regardless of which network is connected.
+:: This survives WiFi changes, VPN connections, and adapter resets.
+set NRPT_KEY=HKLM\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient\DnsPolicyConfig\AdGuardFamily
+reg add "%NRPT_KEY%" /v Name /t REG_SZ /d "." /f >nul
+reg add "%NRPT_KEY%" /v GenericDNSServers /t REG_SZ /d "94.140.14.15;94.140.15.16" /f >nul
+reg add "%NRPT_KEY%" /v ConfigOptions /t REG_DWORD /d 0x8 /f >nul
+reg add "%NRPT_KEY%" /v Version /t REG_DWORD /d 2 /f >nul
 echo    Done.
 
-echo [4/5] Setting up Firefox policy (if installed)...
+echo [4/6] Setting DNS on all network adapters (backup layer)...
+
+:: Also set per-adapter DNS as a fallback layer
+powershell -Command "Get-NetAdapter | ForEach-Object { Set-DnsClientServerAddress -InterfaceIndex $_.ifIndex -ServerAddresses ('94.140.14.15','94.140.15.16') }"
+echo    Done.
+
+echo [5/6] Setting up Firefox policy (if installed)...
 
 :: Firefox uses a JSON policy file instead of registry
 set FF_PATH=C:\Program Files\Mozilla Firefox
@@ -95,7 +106,7 @@ if exist "%FF_PATH%\firefox.exe" (
     echo    Firefox not found at %FF_PATH% - skipping.
 )
 
-echo [5/5] Flushing DNS cache...
+echo [6/6] Flushing DNS cache...
 ipconfig /flushdns >nul
 echo    Done.
 
@@ -106,7 +117,8 @@ echo ============================================================
 echo.
 echo  [OK] Chrome  - AdGuard DNS, SafeSearch, no Guest/Incognito
 echo  [OK] Edge    - AdGuard DNS, SafeSearch, Bing SafeSearch, no Guest/InPrivate
-echo  [OK] System  - DNS set to AdGuard Family (94.140.14.15)
+echo  [OK] System  - NRPT policy: AdGuard DNS for ALL networks
+echo  [OK] Adapter - DNS fallback on all adapters (94.140.14.15)
 echo  [OK] Firefox - Policy applied (if installed)
 echo.
 echo  To verify Chrome: open chrome://policy

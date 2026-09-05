@@ -183,7 +183,18 @@ Same as Chrome, plus:
 
 Edge uses the same Chromium policy engine, different registry path.
 
-**3. System DNS** — sets the active network adapter's DNS to `94.140.14.15` / `94.140.15.16` (AdGuard Family IPv4). This catches apps that don't use browser-level DoH.
+**3. System-wide DNS via NRPT** — Name Resolution Policy Table, a Windows registry-based policy that forces ALL DNS queries through specified servers regardless of which network adapter or WiFi is active. Registry key:
+
+```
+HKLM\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient\DnsPolicyConfig\AdGuardFamily
+  Name            = "."                          (match all domains)
+  GenericDNSServers = "94.140.14.15;94.140.15.16"  (AdGuard Family)
+  ConfigOptions   = 0x8                          (DWORD)
+  Version         = 2                            (DWORD)
+```
+
+Unlike per-adapter DNS settings (which reset when connecting to a new WiFi), NRPT persists across all network changes. The per-adapter DNS (`Set-DnsClientServerAddress` on all adapters) is kept as a backup layer.
+
 
 **4. Firefox** — doesn't use Windows Registry for policies. Instead, it reads `<install-dir>/distribution/policies.json`:
 
