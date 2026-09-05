@@ -138,24 +138,24 @@ powershell -Command ^
 
 echo.
 
-:: Start now
-echo Starting monitor now...
-cd /d "%MONITOR_DIR%"
-start "" "%PYTHONW_PATH%" -m monitor
+:: Start task via Task Scheduler (runs independently, survives CMD close)
+echo Starting monitor via Task Scheduler...
+schtasks /run /tn "WindowsMonitor"
 
 :: Wait a moment then check if it's running
-timeout /t 3 >nul
+timeout /t 5 >nul
 tasklist /fi "IMAGENAME eq pythonw.exe" | findstr pythonw >nul
 if %errorlevel%==0 (
-    echo Monitor is running.
+    echo Monitor is running (via Task Scheduler, independent of this window).
 ) else (
     echo.
     echo WARNING: Monitor does not appear to be running.
-    echo Try running manually to see errors:
-    echo   cd %MONITOR_DIR%
-    echo   python -m monitor
+    echo Check monitor.log for details:
+    echo   type "%MONITOR_DIR%\monitor.log"
     echo.
-    echo Check monitor.log for details.
+    echo Or run manually to see errors:
+    echo   cd /d "%MONITOR_DIR%"
+    echo   python -m monitor
 )
 
 echo.
