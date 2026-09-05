@@ -1,0 +1,553 @@
+<title>Hướng dẫn Windows Monitor</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Inter:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #FAFAF8;
+    --surface: #FFFFFF;
+    --surface-alt: #F0EFEB;
+    --text: #1A1A18;
+    --text-secondary: #5C5B56;
+    --accent: #2E7D5B;
+    --accent-light: #E8F5EE;
+    --accent-dark: #1B5E3E;
+    --alert: #C0392B;
+    --alert-light: #FDEDEB;
+    --border: #E0DFD9;
+    --shadow: rgba(26, 26, 24, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141413;
+      --surface: #1E1E1C;
+      --surface-alt: #262624;
+      --text: #EAEAE6;
+      --text-secondary: #9B9A94;
+      --accent: #4CAF7A;
+      --accent-light: #1A2E23;
+      --accent-dark: #6FCF9A;
+      --alert: #E74C3C;
+      --alert-light: #2A1614;
+      --border: #333330;
+      --shadow: rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #141413;
+    --surface: #1E1E1C;
+    --surface-alt: #262624;
+    --text: #EAEAE6;
+    --text-secondary: #9B9A94;
+    --accent: #4CAF7A;
+    --accent-light: #1A2E23;
+    --accent-dark: #6FCF9A;
+    --alert: #E74C3C;
+    --alert-light: #2A1614;
+    --border: #333330;
+    --shadow: rgba(0, 0, 0, 0.3);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Be Vietnam Pro', 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.7;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2.5rem 1.25rem 4rem;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 2.5rem 0 2rem;
+  }
+
+  .hero-icon {
+    font-size: 3rem;
+    margin-bottom: 0.75rem;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0 0 0.5rem;
+    text-wrap: balance;
+  }
+
+  .hero p {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    margin: 0;
+  }
+
+  h2 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 2.5rem 0 1rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 2px solid var(--accent);
+    display: inline-block;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 1.5rem 0 0.5rem;
+  }
+
+  p, li {
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0;
+    box-shadow: 0 1px 3px var(--shadow);
+  }
+
+  .card-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin: 0 0 0.5rem;
+  }
+
+  .card h3 {
+    margin: 0 0 0.4rem;
+  }
+
+  .card p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+    padding-left: 2rem;
+  }
+
+  .flow::before {
+    content: '';
+    position: absolute;
+    left: 0.55rem;
+    top: 0.75rem;
+    bottom: 0.75rem;
+    width: 2px;
+    background: var(--border);
+  }
+
+  .flow-step {
+    position: relative;
+    padding: 0.75rem 0;
+  }
+
+  .flow-step::before {
+    content: '';
+    position: absolute;
+    left: -1.55rem;
+    top: 1.05rem;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+  }
+
+  .flow-step strong {
+    display: block;
+    font-size: 0.95rem;
+    margin-bottom: 0.15rem;
+  }
+
+  .flow-step span {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+  }
+
+  .alert-box {
+    background: var(--alert-light);
+    border-left: 3px solid var(--alert);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+  }
+
+  .alert-box strong {
+    color: var(--alert);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .alert-box p {
+    margin: 0.3rem 0 0;
+    font-size: 0.9rem;
+  }
+
+  .tip-box {
+    background: var(--accent-light);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+  }
+
+  .tip-box strong {
+    color: var(--accent);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .tip-box p {
+    margin: 0.3rem 0 0;
+    font-size: 0.9rem;
+  }
+
+  .features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+
+  @media (max-width: 520px) {
+    .features { grid-template-columns: 1fr; }
+  }
+
+  .feature {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .feature-icon {
+    font-size: 1.6rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .feature-title {
+    font-weight: 600;
+    font-size: 0.88rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .feature-desc {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  .cmd-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.88rem;
+  }
+
+  .cmd-table th {
+    text-align: left;
+    font-weight: 600;
+    padding: 0.6rem 0.75rem;
+    border-bottom: 2px solid var(--border);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-secondary);
+  }
+
+  .cmd-table td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  .cmd-table code {
+    background: var(--surface-alt);
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    font-family: 'Inter', monospace;
+    font-size: 0.85rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .report-preview {
+    background: var(--surface-alt);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    font-family: 'Inter', monospace;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    white-space: pre-line;
+    overflow-x: auto;
+    margin: 1rem 0;
+    color: var(--text);
+  }
+
+  .setup-steps {
+    counter-reset: step;
+    list-style: none;
+    padding: 0;
+  }
+
+  .setup-steps li {
+    counter-increment: step;
+    position: relative;
+    padding: 0.75rem 0 0.75rem 3rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .setup-steps li:last-child {
+    border-bottom: none;
+  }
+
+  .setup-steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 0.75rem;
+    width: 2rem;
+    height: 2rem;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+
+  .setup-steps li strong {
+    display: block;
+    margin-bottom: 0.15rem;
+  }
+
+  .faq dt {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin: 1.25rem 0 0.3rem;
+    color: var(--text);
+  }
+
+  .faq dd {
+    margin: 0 0 0 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+  }
+
+  footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+  }
+</style>
+
+<div class="hero">
+  <div class="hero-icon">🛡️</div>
+  <h1>Windows Monitor</h1>
+  <p>Theo dõi & bảo vệ con bạn trên máy tính — điều khiển từ xa qua Telegram</p>
+</div>
+
+<h2>App này làm gì?</h2>
+
+<p>Windows Monitor chạy ngầm trên máy tính của con, tự động ghi lại hoạt động và gửi báo cáo cho bạn qua Telegram. Bạn không cần ngồi cạnh để giám sát — mọi thứ đều nhận được trên điện thoại.</p>
+
+<div class="features">
+  <div class="feature">
+    <div class="feature-icon">📊</div>
+    <div class="feature-title">Theo dõi thời gian</div>
+    <p class="feature-desc">Biết con dùng app gì, vào web nào, bao lâu</p>
+  </div>
+  <div class="feature">
+    <div class="feature-icon">📸</div>
+    <div class="feature-title">Chụp màn hình</div>
+    <p class="feature-desc">Tự chụp mỗi phút, gửi ảnh về Telegram</p>
+  </div>
+  <div class="feature">
+    <div class="feature-icon">🚫</div>
+    <div class="feature-title">Chặn website</div>
+    <p class="feature-desc">Gửi lệnh từ Telegram để cấm trang web</p>
+  </div>
+  <div class="feature">
+    <div class="feature-icon">🔔</div>
+    <div class="feature-title">Cảnh báo tức thì</div>
+    <p class="feature-desc">Nhận thông báo ngay khi con vào web bị cấm</p>
+  </div>
+</div>
+
+<h2>Cách hoạt động</h2>
+
+<p>App chạy hoàn toàn tự động, bạn chỉ cần xem Telegram:</p>
+
+<div class="flow">
+  <div class="flow-step">
+    <strong>Con mở máy tính, đăng nhập Windows</strong>
+    <span>App tự khởi động theo, không cần mở thủ công</span>
+  </div>
+  <div class="flow-step">
+    <strong>App ghi lại hoạt động mỗi 5 giây</strong>
+    <span>Đang mở app gì? Vào website nào? Bao lâu rồi? Tất cả được lưu lại</span>
+  </div>
+  <div class="flow-step">
+    <strong>Chụp ảnh màn hình mỗi phút</strong>
+    <span>Ảnh gửi thẳng về Telegram cho bạn xem, rồi tự xóa trên máy con</span>
+  </div>
+  <div class="flow-step">
+    <strong>Nếu con vào web bị cấm → bạn nhận cảnh báo ngay</strong>
+    <span>Ví dụ: "🚫 tiktok.com — chrome.exe — 14:32:05"</span>
+  </div>
+  <div class="flow-step">
+    <strong>Cuối ngày: nhận báo cáo tổng hợp</strong>
+    <span>Top app, top website, tổng thời gian — gửi tự động lúc 10 giờ tối</span>
+  </div>
+</div>
+
+<h2>Theo dõi website trên mọi trình duyệt</h2>
+
+<p>Không cần cài thêm gì trên Chrome, Firefox hay Edge. App đọc <strong>tên cửa sổ</strong> của trình duyệt để biết con đang xem trang nào. Ví dụ:</p>
+
+<div class="card">
+  <div class="card-label">Cửa sổ Chrome hiển thị</div>
+  <h3>YouTube - Google Chrome</h3>
+  <p>→ App nhận ra: đang vào <strong>youtube.com</strong> bằng Chrome</p>
+</div>
+
+<div class="card">
+  <div class="card-label">Cửa sổ Firefox hiển thị</div>
+  <h3>Reddit — Mozilla Firefox</h3>
+  <p>→ App nhận ra: đang vào <strong>reddit.com</strong> bằng Firefox</p>
+</div>
+
+<p>Cách này hoạt động với Chrome, Edge, Firefox, Brave, Opera — bất kỳ trình duyệt nào. Con không thể lách bằng cách đổi sang trình duyệt khác.</p>
+
+<h2>Lệnh Telegram</h2>
+
+<p>Mở Telegram, nhắn cho bot các lệnh sau:</p>
+
+<div style="overflow-x: auto;">
+<table class="cmd-table">
+  <thead>
+    <tr>
+      <th>Lệnh</th>
+      <th>Tác dụng</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>/block tiktok.com</code></td>
+      <td>Cấm truy cập tiktok.com trên máy con</td>
+    </tr>
+    <tr>
+      <td><code>/unblock tiktok.com</code></td>
+      <td>Bỏ cấm tiktok.com</td>
+    </tr>
+    <tr>
+      <td><code>/list</code></td>
+      <td>Xem danh sách trang web đang bị cấm</td>
+    </tr>
+    <tr>
+      <td><code>/report</code></td>
+      <td>Xem báo cáo sử dụng hôm nay ngay lập tức</td>
+    </tr>
+    <tr>
+      <td><code>/screenshot</code></td>
+      <td>Chụp màn hình ngay lập tức</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Báo cáo hàng ngày trông như thế nào?</h2>
+
+<div class="report-preview">📊 Báo cáo ngày 2026-09-05
+
+🖥️ Tổng thời gian: 4h 32m
+
+📱 Top Apps:
+  Chrome          2h 15m  ██████████░░░░ 50%
+  Zalo            0h 45m  ████░░░░░░░░░░ 17%
+  Minecraft       0h 30m  ███░░░░░░░░░░░ 11%
+
+🌐 Top Websites:
+  youtube.com     1h 20m  ████████░░░░░░ 59%
+  google.com      0h 15m  ██░░░░░░░░░░░░ 11%
+
+🚫 Blocked domains: 2</div>
+
+<h2>Cài đặt (nhờ người biết IT)</h2>
+
+<div class="tip-box">
+  <strong>Lưu ý</strong>
+  <p>Phần cài đặt cần người có kiến thức IT. Sau khi cài xong, bạn chỉ cần dùng Telegram để điều khiển.</p>
+</div>
+
+<ol class="setup-steps">
+  <li>
+    <strong>Tạo Telegram Bot</strong>
+    Mở Telegram, tìm @BotFather, gửi lệnh /newbot, làm theo hướng dẫn. Ghi lại <em>Bot Token</em> và <em>Chat ID</em> của bạn.
+  </li>
+  <li>
+    <strong>Cài Python trên máy con</strong>
+    Tải từ python.org, cài đặt và chọn "Add to PATH".
+  </li>
+  <li>
+    <strong>Copy thư mục windows-monitor vào máy con</strong>
+    Đổi tên <code>config.example.json</code> thành <code>config.json</code>, điền Bot Token và Chat ID vào.
+  </li>
+  <li>
+    <strong>Chạy install.bat với quyền Administrator</strong>
+    Chuột phải → "Run as administrator". App sẽ tự cài và chạy.
+  </li>
+</ol>
+
+<div class="alert-box">
+  <strong>Quan trọng</strong>
+  <p>App cần chạy với quyền <strong>Administrator</strong> để có thể chặn website. Nếu không có quyền này, tính năng chặn web sẽ không hoạt động.</p>
+</div>
+
+<h2>Câu hỏi thường gặp</h2>
+
+<dl class="faq">
+  <dt>Con có biết app đang chạy không?</dt>
+  <dd>App chạy ngầm, không hiển thị cửa sổ. Tuy nhiên, nếu con biết mở Task Manager thì có thể thấy process Python đang chạy.</dd>
+
+  <dt>Nếu con tắt app thì sao?</dt>
+  <dd>App được cài vào Task Scheduler — nếu bị tắt, nó sẽ tự khởi động lại khi con đăng nhập Windows lần sau. Bạn cũng sẽ nhận tin nhắn "Monitor stopped" trên Telegram nếu app bị dừng.</dd>
+
+  <dt>App có hoạt động khi con dùng chế độ ẩn danh (Incognito)?</dt>
+  <dd>Có, vẫn hoạt động. App đọc tên cửa sổ, không phụ thuộc vào cookie hay lịch sử trình duyệt. Tuy nhiên, một số trang web có thể hiển thị tên chung chung hơn trong chế độ ẩn danh.</dd>
+
+  <dt>Con có thể gỡ cài đặt app không?</dt>
+  <dd>Nếu con có tài khoản Administrator trên máy thì có thể. Nên tạo cho con tài khoản Windows kiểu Standard (không phải Admin) để hạn chế điều này.</dd>
+
+  <dt>App có làm chậm máy không?</dt>
+  <dd>Không đáng kể. App rất nhẹ, chỉ kiểm tra cửa sổ đang mở mỗi 5 giây và chụp ảnh mỗi phút.</dd>
+
+  <dt>Dữ liệu có an toàn không?</dt>
+  <dd>Dữ liệu được lưu trên máy con (file database) và gửi trực tiếp tới Telegram của bạn. Không qua server trung gian nào khác.</dd>
+</dl>
+
+<footer>
+  Windows Monitor &middot; Parental Control qua Telegram
+</footer>
