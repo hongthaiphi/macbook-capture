@@ -1,5 +1,7 @@
 import asyncio
 import logging
+import logging.handlers
+import os
 import signal
 import sys
 
@@ -13,10 +15,20 @@ from .blocker import TelegramBot, _sync_all
 from .reporter import ReportScheduler, send_blocked_alert
 from .limiter import reset_daily_blocks
 
+_log_dir = os.path.dirname(os.path.abspath(__file__))
+if getattr(sys, "frozen", False):
+    _log_dir = os.path.dirname(sys.executable)
+_log_file = os.path.join(_log_dir, "monitor.log")
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    handlers=[logging.StreamHandler(sys.stdout)],
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+        logging.handlers.RotatingFileHandler(
+            _log_file, maxBytes=2 * 1024 * 1024, backupCount=3, encoding="utf-8"
+        ),
+    ],
 )
 logger = logging.getLogger(__name__)
 
