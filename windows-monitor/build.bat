@@ -47,7 +47,7 @@ pyinstaller ^
     --hidden-import "monitor.main" ^
     --collect-all "telegram" ^
     --collect-all "mss" ^
-    monitor\__main__.py
+    run_monitor.py
 
 if %errorlevel% neq 0 (
     echo.
