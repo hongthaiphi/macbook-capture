@@ -95,34 +95,23 @@ echo.
 echo [1/2] Creating Task Scheduler task...
 powershell -Command "$action = New-ScheduledTaskAction -Execute '%PYTHONW_PATH%' -Argument '-m monitor' -WorkingDirectory '%MONITOR_DIR%'; $trigger = New-ScheduledTaskTrigger -AtLogOn; $principal = New-ScheduledTaskPrincipal -GroupId 'BUILTIN\Users' -RunLevel Limited; $settings = New-ScheduledTaskSettingsSet -RestartCount 999 -RestartInterval (New-TimeSpan -Minutes 1) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -ExecutionTimeLimit 0 -MultipleInstances IgnoreNew; Register-ScheduledTask -TaskName 'WindowsMonitor' -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Force | Out-Null; $t = Get-ScheduledTask -TaskName 'WindowsMonitor'; Write-Host '  OK - LogonType:' $t.Principal.LogonType 'RunLevel:' $t.Principal.RunLevel; Write-Host '  WorkDir:' $t.Actions[0].WorkingDirectory"
 
-if %errorlevel% neq 0 (
-    echo  FAILED - Task Scheduler setup failed.
-) else (
-    echo  Task auto-restarts up to 999 times if killed.
-)
+if %errorlevel% neq 0 echo  FAILED - Task Scheduler setup failed.
+if %errorlevel% equ 0 echo  Task auto-restarts up to 999 times if killed.
 echo.
 
 :: ===== LAYER 2: Registry Run key =====
 :: HKLM\...\Run = runs for ALL users on login
 :: Standard users CANNOT modify HKLM registry = cannot disable this
+:: Create a wrapper script so working directory is set correctly
 echo [2/2] Adding registry auto-start...
-reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "WindowsMonitor" /t REG_SZ /d "\"%PYTHONW_PATH%\" -m monitor" /f >nul
 
-if %errorlevel%==0 (
-    echo  OK - Registry auto-start added (HKLM, standard users cannot remove).
-) else (
-    echo  FAILED - Registry auto-start failed.
-)
-echo.
-
-:: ===== Set working directory for registry method =====
-:: The registry Run key doesn't support working directory, so we need a wrapper
 echo @echo off> "%MONITOR_DIR%\start-monitor.bat"
 echo cd /d "%MONITOR_DIR%">> "%MONITOR_DIR%\start-monitor.bat"
 echo start "" "%PYTHONW_PATH%" -m monitor>> "%MONITOR_DIR%\start-monitor.bat"
 
-:: Update registry to use the wrapper
-reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "WindowsMonitor" /t REG_SZ /d "\"%MONITOR_DIR%\start-monitor.bat\"" /f >nul
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "WindowsMonitor" /d "%MONITOR_DIR%\start-monitor.bat" /f >nul
+if %errorlevel% equ 0 echo  OK - Registry auto-start added.
+if %errorlevel% neq 0 echo  FAILED - Registry auto-start failed.
 
 echo ========================================
 echo  Starting monitor now...
