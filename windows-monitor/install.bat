@@ -117,12 +117,9 @@ echo.
 
 :: ===== Set working directory for registry method =====
 :: The registry Run key doesn't support working directory, so we need a wrapper
-:: Create a small .bat launcher that cd's first
-> "%MONITOR_DIR%\start-monitor.bat" (
-    echo @echo off
-    echo cd /d "%MONITOR_DIR%"
-    echo start "" "%PYTHONW_PATH%" -m monitor
-)
+echo @echo off> "%MONITOR_DIR%\start-monitor.bat"
+echo cd /d "%MONITOR_DIR%">> "%MONITOR_DIR%\start-monitor.bat"
+echo start "" "%PYTHONW_PATH%" -m monitor>> "%MONITOR_DIR%\start-monitor.bat"
 
 :: Update registry to use the wrapper
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "WindowsMonitor" /t REG_SZ /d "\"%MONITOR_DIR%\start-monitor.bat\"" /f >nul
