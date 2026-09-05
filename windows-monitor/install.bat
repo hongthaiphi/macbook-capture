@@ -47,6 +47,9 @@ if not exist config.json (
 
 :: Get paths
 set MONITOR_DIR=%~dp0
+:: Remove trailing backslash for cleaner paths
+if "%MONITOR_DIR:~-1%"=="\" set MONITOR_DIR=%MONITOR_DIR:~0,-1%
+
 for %%I in (python.exe) do set PYTHON_PATH=%%~$PATH:I
 for %%I in ("%PYTHON_PATH%") do set PYTHON_DIR=%%~dpI
 set PYTHONW_PATH=%PYTHON_DIR%pythonw.exe
@@ -58,6 +61,25 @@ if not exist "%PYTHONW_PATH%" (
 )
 
 echo.
+echo ========================================
+echo  DEBUG INFO
+echo ========================================
+echo  MONITOR_DIR: %MONITOR_DIR%
+echo  PYTHON_PATH: %PYTHON_PATH%
+echo  PYTHONW_PATH: %PYTHONW_PATH%
+echo.
+
+:: Quick test — verify monitor can at least import
+echo Testing monitor import...
+python -c "from monitor.config import load_config; print('OK: config loads')"
+if %errorlevel% neq 0 (
+    echo ERROR: Monitor package cannot be imported.
+    echo Make sure you are running install.bat from the windows-monitor folder.
+    pause
+    exit /b 1
+)
+echo.
+
 echo ========================================
 echo  Task Scheduler Setup
 echo ========================================
@@ -79,17 +101,16 @@ echo Creating scheduled task...
 :: Remove old task if exists
 schtasks /delete /tn "WindowsMonitor" /f >nul 2>&1
 
-:: Create task that runs under admin account with highest privileges
-:: Triggered on ANY user logon — runs in the user's session but elevated
-:: Standard users CANNOT kill an elevated process (Access Denied in Task Manager)
-schtasks /create ^
-    /tn "WindowsMonitor" ^
-    /tr "\"%PYTHONW_PATH%\" -m monitor" ^
-    /sc onlogon ^
-    /ru "%ADMIN_USER%" ^
-    /rp "%ADMIN_PASS%" ^
-    /rl highest ^
-    /f
+:: Kill existing monitor process
+taskkill /f /im pythonw.exe /fi "WINDOWTITLE eq monitor" >nul 2>&1
+
+:: Use PowerShell to create task with proper working directory
+powershell -Command ^
+    "$action = New-ScheduledTaskAction -Execute '%PYTHONW_PATH%' -Argument '-m monitor' -WorkingDirectory '%MONITOR_DIR%'; ^
+     $trigger = New-ScheduledTaskTrigger -AtLogOn; ^
+     $settings = New-ScheduledTaskSettingsSet -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -ExecutionTimeLimit 0; ^
+     $task = Register-ScheduledTask -TaskName 'WindowsMonitor' -Action $action -Trigger $trigger -Settings $settings -User '%ADMIN_USER%' -Password '%ADMIN_PASS%' -RunLevel Highest -Force; ^
+     if ($task) { Write-Host 'Task created successfully.'; Write-Host 'WorkingDirectory:' $task.Actions[0].WorkingDirectory } else { Write-Host 'ERROR: Task creation failed'; exit 1 }"
 
 if %errorlevel% neq 0 (
     echo.
@@ -101,15 +122,19 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-echo Task created successfully.
 echo.
 
-:: Also set task to restart on failure
-echo Configuring auto-restart on failure...
-powershell -Command "$action = New-ScheduledTaskAction -Execute '%PYTHONW_PATH%' -Argument '-m monitor' -WorkingDirectory '%MONITOR_DIR%'; $settings = New-ScheduledTaskSettingsSet -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -ExecutionTimeLimit 0; Set-ScheduledTask -TaskName 'WindowsMonitor' -Settings $settings -Action $action" >nul 2>&1
-
-:: Set working directory via XML update
-powershell -Command "$task = Get-ScheduledTask 'WindowsMonitor'; $task.Actions[0].WorkingDirectory = '%MONITOR_DIR%'; Set-ScheduledTask -InputObject $task" >nul 2>&1
+:: Verify task was created correctly
+echo Verifying task...
+powershell -Command ^
+    "$t = Get-ScheduledTask -TaskName 'WindowsMonitor' -ErrorAction SilentlyContinue; ^
+     if ($t) { ^
+         Write-Host '  Status:' $t.State; ^
+         Write-Host '  Execute:' $t.Actions[0].Execute; ^
+         Write-Host '  Arguments:' $t.Actions[0].Arguments; ^
+         Write-Host '  WorkDir:' $t.Actions[0].WorkingDirectory; ^
+         Write-Host '  RunAs:' $t.Principal.UserId ^
+     } else { Write-Host 'ERROR: Task not found after creation!' }"
 
 echo.
 
@@ -117,6 +142,21 @@ echo.
 echo Starting monitor now...
 cd /d "%MONITOR_DIR%"
 start "" "%PYTHONW_PATH%" -m monitor
+
+:: Wait a moment then check if it's running
+timeout /t 3 >nul
+tasklist /fi "IMAGENAME eq pythonw.exe" | findstr pythonw >nul
+if %errorlevel%==0 (
+    echo Monitor is running.
+) else (
+    echo.
+    echo WARNING: Monitor does not appear to be running.
+    echo Try running manually to see errors:
+    echo   cd %MONITOR_DIR%
+    echo   python -m monitor
+    echo.
+    echo Check monitor.log for details.
+)
 
 echo.
 echo ========================================
@@ -127,6 +167,7 @@ echo  - Monitor dang chay ngam.
 echo  - Tu dong khoi dong khi bat ky user nao dang nhap.
 echo  - Standard user KHONG the tat duoc process.
 echo  - Neu process bi crash, tu dong restart sau 1 phut.
+echo  - Log file: %MONITOR_DIR%\monitor.log
 echo.
 echo  Dieu khien qua Telegram bot.
 echo.

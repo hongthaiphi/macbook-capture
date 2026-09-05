@@ -7,21 +7,14 @@ import sys
 
 from datetime import date
 
-from .config import load_config
-from .db import init_db
-from .tracker import Tracker, get_idle_seconds
-from .screenshot import ScreenshotLoop
-from .blocker import TelegramBot, _sync_all
-from .reporter import ReportScheduler, send_blocked_alert
-from .limiter import reset_daily_blocks
+# Setup logging FIRST, before any other module import
+# so all modules get the configured handlers
+from .config import BASE_DIR
 
-_log_dir = os.path.dirname(os.path.abspath(__file__))
-if getattr(sys, "frozen", False):
-    _log_dir = os.path.dirname(sys.executable)
-_log_file = os.path.join(_log_dir, "monitor.log")
+_log_file = str(BASE_DIR / "monitor.log")
 
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     handlers=[
         logging.StreamHandler(sys.stdout),
@@ -30,14 +23,35 @@ logging.basicConfig(
         ),
     ],
 )
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("httpcore").setLevel(logging.WARNING)
+logging.getLogger("telegram").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
+
+logger.info("=" * 50)
+logger.info("Windows Monitor starting up")
+logger.info("BASE_DIR: %s", BASE_DIR)
+logger.info("Log file: %s", _log_file)
+logger.info("CWD: %s", os.getcwd())
+logger.info("Python: %s", sys.executable)
+logger.info("Frozen: %s", getattr(sys, "frozen", False))
+logger.info("=" * 50)
+
+from .config import load_config
+from .db import init_db
+from .tracker import Tracker, get_idle_seconds
+from .screenshot import ScreenshotLoop
+from .blocker import TelegramBot, _sync_all
+from .reporter import ReportScheduler, send_blocked_alert
+from .limiter import reset_daily_blocks
 
 
 async def main():
     config = load_config()
     init_db()
+    logger.info("DB path: %s", str(BASE_DIR / "usage.db"))
 
-    logger.info("Starting Windows Monitor...")
+    logger.info("Starting Telegram bot...")
 
     telegram_bot = TelegramBot(config)
     app = telegram_bot.build_app()
@@ -52,7 +66,6 @@ async def main():
     async def on_blocked(app_name: str, domain: str):
         await send_blocked_alert(bot, chat_id, app_name, domain)
 
-    # Wrapper to call async from sync context
     loop = asyncio.get_event_loop()
 
     def on_blocked_sync(app_name: str, domain: str):
@@ -72,6 +85,7 @@ async def main():
     _sync_all()
 
     await bot.send_message(chat_id=chat_id, text="🟢 Windows Monitor started")
+    logger.info("Telegram 'started' message sent")
 
     async def midnight_reset_loop():
         last_date = date.today()
@@ -89,6 +103,7 @@ async def main():
         asyncio.create_task(report_scheduler.run()),
         asyncio.create_task(midnight_reset_loop()),
     ]
+    logger.info("All 4 tasks created and running")
 
     stop_event = asyncio.Event()
 
@@ -121,7 +136,11 @@ async def main():
 
 
 def run():
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except Exception:
+        logger.exception("Fatal error")
+        raise
 
 
 if __name__ == "__main__":

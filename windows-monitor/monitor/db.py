@@ -1,8 +1,12 @@
+import logging
 import sqlite3
 from datetime import datetime, date
-from pathlib import Path
 
-DB_PATH = Path(__file__).parent.parent / "usage.db"
+from .config import BASE_DIR
+
+logger = logging.getLogger(__name__)
+
+DB_PATH = BASE_DIR / "usage.db"
 
 
 def get_conn() -> sqlite3.Connection:
