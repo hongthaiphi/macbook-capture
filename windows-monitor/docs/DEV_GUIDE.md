@@ -153,3 +153,71 @@ The tracker module imports `ctypes.windll` which only exists on Windows. To deve
 - **Admin rights** required for hosts file modification
 - **No persistence of screenshot count** — `screenshot_loop.count` resets on restart
 - **Task Scheduler** job uses `pythonw` — no console window, but also no visible errors
+
+## AdGuard DNS + SafeSearch Setup
+
+Two batch scripts handle browser-level and system-level DNS protection:
+
+### setup-safe-dns.bat
+
+Applies five layers of protection. Must run as Administrator.
+
+**1. Chrome Registry Policies** (`HKLM\SOFTWARE\Policies\Google\Chrome`)
+
+| Key | Value | Purpose |
+|-----|-------|---------|
+| `DnsOverHttpsMode` | `secure` | Force Chrome to use DNS-over-HTTPS only |
+| `DnsOverHttpsTemplates` | `https://family.adguard-dns.com/dns-query` | Point DoH to AdGuard Family |
+| `ForceGoogleSafeSearch` | `1` (DWORD) | Lock Google Search to SafeSearch mode |
+| `BrowserGuestModeEnabled` | `0` (DWORD) | Disable Guest Mode bypass |
+| `QuicAllowed` | `0` (DWORD) | Block QUIC/HTTP3 protocol (prevents DNS bypass) |
+| `IncognitoModeAvailability` | `1` (DWORD) | Disable Incognito Mode |
+
+Chrome reads these at startup from the Windows Registry. Level becomes `Mandatory`, scope is `Machine` — the user cannot override from `chrome://settings`.
+
+**2. Edge Registry Policies** (`HKLM\SOFTWARE\Policies\Microsoft\Edge`)
+
+Same as Chrome, plus:
+- `ForceBingSafeSearch` = `2` (Strict) — locks Bing SafeSearch
+- `InPrivateModeAvailability` = `1` — disables InPrivate browsing
+
+Edge uses the same Chromium policy engine, different registry path.
+
+**3. System DNS** — sets the active network adapter's DNS to `94.140.14.15` / `94.140.15.16` (AdGuard Family IPv4). This catches apps that don't use browser-level DoH.
+
+**4. Firefox** — doesn't use Windows Registry for policies. Instead, it reads `<install-dir>/distribution/policies.json`:
+
+```json
+{
+  "policies": {
+    "DNSOverHTTPS": {
+      "Enabled": true,
+      "ProviderURL": "https://family.adguard-dns.com/dns-query",
+      "Locked": true
+    },
+    "DisablePrivateBrowsing": true,
+    "Preferences": {
+      "network.trr.mode": { "Value": 3, "Status": "locked" }
+    }
+  }
+}
+```
+
+`network.trr.mode = 3` means "DoH only" (no fallback to plain DNS). `Locked` prevents the user from changing it in `about:config`.
+
+**5. DNS flush** — `ipconfig /flushdns` clears cached resolutions so new DNS settings take effect immediately.
+
+### undo-safe-dns.bat
+
+Reverses everything: deletes Chrome/Edge registry keys, resets system DNS to DHCP, removes Firefox policy file.
+
+### Verification
+
+- Chrome: navigate to `chrome://policy` — all policies should show Level=`Mandatory`, Applies to=`Machine`
+- Edge: `edge://policy` — same check
+- Firefox: `about:policies` — should show active policies
+- Test: Google search for explicit content → SafeSearch active; visit a known 18+ site → blocked by AdGuard DNS
+
+### Why QUIC must be disabled
+
+Chrome's QUIC (HTTP/3) protocol can bypass DNS resolution entirely by using cached QUIC connections to Google servers. This means even with DoH pointed at AdGuard, Chrome might skip the DNS lookup and connect directly. Disabling QUIC forces all connections through standard HTTPS, ensuring every domain lookup goes through AdGuard DNS Family.

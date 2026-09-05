@@ -353,6 +353,143 @@
     color: var(--text-secondary);
   }
 
+  .shield-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+
+  @media (max-width: 520px) {
+    .shield-grid { grid-template-columns: 1fr; }
+  }
+
+  .shield-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+  }
+
+  .shield-item .shield-icon {
+    font-size: 1.4rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .shield-item .shield-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .shield-item p {
+    font-size: 0.83rem;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  .layer-diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1.25rem 0;
+  }
+
+  .layer {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px dashed var(--border);
+  }
+
+  .layer:last-child {
+    border-bottom: none;
+  }
+
+  .layer-num {
+    width: 1.6rem;
+    height: 1.6rem;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .layer-content strong {
+    display: block;
+    font-size: 0.9rem;
+  }
+
+  .layer-content span {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+  }
+
+  .code-block {
+    background: var(--surface-alt);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    font-family: 'Inter', monospace;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    overflow-x: auto;
+    margin: 0.75rem 0;
+    white-space: pre;
+    color: var(--text);
+  }
+
+  .versus {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0.5rem;
+    align-items: center;
+    margin: 1rem 0;
+  }
+
+  .versus-side {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    text-align: center;
+  }
+
+  .versus-side.bad {
+    border-color: var(--alert);
+  }
+
+  .versus-side.good {
+    border-color: var(--accent);
+  }
+
+  .versus-arrow {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+  }
+
+  .versus-side .vs-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.25rem;
+  }
+
+  .versus-side.bad .vs-label { color: var(--alert); }
+  .versus-side.good .vs-label { color: var(--accent); }
+
+  .versus-side .vs-text {
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
   footer {
     margin-top: 3rem;
     padding-top: 1.5rem;
@@ -526,6 +663,135 @@
   <p>App cần chạy với quyền <strong>Administrator</strong> để có thể chặn website. Nếu không có quyền này, tính năng chặn web sẽ không hoạt động.</p>
 </div>
 
+<h2>Bảo vệ toàn diện: AdGuard DNS + SafeSearch</h2>
+
+<p>Windows Monitor chặn từng website cụ thể qua lệnh Telegram. Nhưng không thể liệt kê hết hàng triệu trang web xấu. Giải pháp: bật <strong>lọc DNS tự động</strong> — hệ thống sẽ tự chặn toàn bộ nội dung người lớn, cờ bạc, lừa đảo mà không cần bạn biết trước từng trang.</p>
+
+<h3>Tại sao cần thêm bước này?</h3>
+
+<div class="versus">
+  <div class="versus-side bad">
+    <div class="vs-label">Chỉ có Monitor</div>
+    <div class="vs-text">Chặn từng trang một<br>Phải biết trước tên web</div>
+  </div>
+  <div class="versus-arrow">→</div>
+  <div class="versus-side good">
+    <div class="vs-label">Monitor + DNS + SafeSearch</div>
+    <div class="vs-text">Tự chặn hàng triệu trang xấu<br>Google tự lọc kết quả tìm kiếm</div>
+  </div>
+</div>
+
+<h3>3 lớp bảo vệ chồng lên nhau</h3>
+
+<div class="layer-diagram">
+  <div class="layer">
+    <div class="layer-num">1</div>
+    <div class="layer-content">
+      <strong>AdGuard DNS Family</strong>
+      <span>Chặn tự động hàng triệu trang web người lớn, cờ bạc, malware ở cấp mạng — mọi app, mọi trình duyệt đều bị chặn</span>
+    </div>
+  </div>
+  <div class="layer">
+    <div class="layer-num">2</div>
+    <div class="layer-content">
+      <strong>Google SafeSearch bắt buộc</strong>
+      <span>Kết quả tìm kiếm Google tự động lọc sạch nội dung nhạy cảm — con không thể tắt được</span>
+    </div>
+  </div>
+  <div class="layer">
+    <div class="layer-num">3</div>
+    <div class="layer-content">
+      <strong>Windows Monitor</strong>
+      <span>Theo dõi + chặn thêm web cụ thể + screenshot + báo cáo cho bạn</span>
+    </div>
+  </div>
+</div>
+
+<h3>Cách thiết lập (nhờ người biết IT)</h3>
+
+<div class="tip-box">
+  <strong>Lưu ý</strong>
+  <p>Tất cả các bước dưới đây cần quyền Administrator trên máy con. Sau khi thiết lập xong, con không thể tự thay đổi nếu dùng tài khoản Standard.</p>
+</div>
+
+<h3>Bước A: Đặt AdGuard DNS Family cho toàn hệ thống</h3>
+
+<p>Mở <strong>Settings → Network & Internet → Wi-Fi</strong> (hoặc Ethernet) → nhấn vào mạng đang kết nối → <strong>DNS server assignment → Edit</strong>:</p>
+
+<div class="card">
+  <div class="card-label">Cài đặt DNS thủ công</div>
+  <h3>Chọn "Manual" → bật IPv4</h3>
+  <p>
+    Preferred DNS: <code>94.140.14.15</code><br>
+    Alternate DNS: <code>94.140.15.16</code><br>
+    DNS over HTTPS: <strong>On (automatic template)</strong>
+  </p>
+</div>
+
+<p>Sau khi lưu, mọi ứng dụng trên máy sẽ đi qua AdGuard DNS Family — tự động chặn web 18+, cờ bạc, phishing.</p>
+
+<h3>Bước B: Ép Chrome và Edge dùng AdGuard DNS + SafeSearch</h3>
+
+<p>Chrome và Edge có bộ DNS riêng, có thể bypass DNS hệ thống. Cần ép bằng <strong>Registry Policy</strong> — tương đương "luật bắt buộc" mà trình duyệt phải tuân theo.</p>
+
+<div class="alert-box">
+  <strong>Quan trọng</strong>
+  <p>Nhờ người biết IT chạy file <code>setup-safe-dns.bat</code> với quyền Administrator. File này nằm trong thư mục <code>windows-monitor</code>.</p>
+</div>
+
+<p>File này sẽ tự động thiết lập:</p>
+
+<div class="shield-grid">
+  <div class="shield-item">
+    <div class="shield-icon">🔒</div>
+    <div class="shield-title">DNS bắt buộc</div>
+    <p>Chrome và Edge buộc phải dùng AdGuard DNS Family, không thể tự đổi</p>
+  </div>
+  <div class="shield-item">
+    <div class="shield-icon">🔍</div>
+    <div class="shield-title">SafeSearch bắt buộc</div>
+    <p>Google Search tự lọc kết quả nhạy cảm, con không tắt được</p>
+  </div>
+  <div class="shield-item">
+    <div class="shield-icon">👤</div>
+    <div class="shield-title">Tắt Guest Mode</div>
+    <p>Không cho dùng chế độ Khách để lách luật</p>
+  </div>
+  <div class="shield-item">
+    <div class="shield-icon">🌐</div>
+    <div class="shield-title">Chặn giao thức QUIC</div>
+    <p>Ngăn trình duyệt dùng giao thức riêng để bypass lọc DNS</p>
+  </div>
+</div>
+
+<h3>Bước C: Kiểm tra đã hoạt động</h3>
+
+<ol class="setup-steps">
+  <li>
+    <strong>Mở Chrome, gõ vào thanh địa chỉ: <code>chrome://policy</code></strong>
+    Nếu thấy các dòng DnsOverHttpsMode, ForceGoogleSafeSearch với Level là "Mandatory" → thành công.
+  </li>
+  <li>
+    <strong>Thử tìm kiếm nội dung nhạy cảm trên Google</strong>
+    Kết quả phải được lọc sạch. Nếu thấy dòng "SafeSearch is locked" ở đầu trang → đúng rồi.
+  </li>
+  <li>
+    <strong>Thử truy cập một trang 18+ bất kỳ</strong>
+    Trang phải bị chặn hoàn toàn — hiển thị lỗi "This site can't be reached".
+  </li>
+</ol>
+
+<h3>Còn Firefox thì sao?</h3>
+
+<p>Firefox không dùng Registry Policy của Windows. Cách xử lý:</p>
+
+<div class="card">
+  <div class="card-label">2 lựa chọn</div>
+  <h3>Gỡ Firefox hoặc cấu hình riêng</h3>
+  <p><strong>Cách 1 (đơn giản):</strong> Gỡ Firefox, chỉ cho con dùng Chrome hoặc Edge — đã được bảo vệ bởi policy.<br>
+  <strong>Cách 2:</strong> Tạo file policy cho Firefox tại <code>C:\Program Files\Mozilla Firefox\distribution\policies.json</code> — xem hướng dẫn trong DEV_GUIDE.md.</p>
+</div>
+
 <h2>Câu hỏi thường gặp</h2>
 
 <dl class="faq">
@@ -546,6 +812,15 @@
 
   <dt>Dữ liệu có an toàn không?</dt>
   <dd>Dữ liệu được lưu trên máy con (file database) và gửi trực tiếp tới Telegram của bạn. Không qua server trung gian nào khác.</dd>
+
+  <dt>AdGuard DNS Family là gì? Có mất phí không?</dt>
+  <dd>Là dịch vụ lọc DNS miễn phí của AdGuard. Mọi yêu cầu truy cập web đều đi qua máy chủ của họ — nếu là trang xấu (18+, cờ bạc, malware) thì bị chặn tự động. Hoàn toàn miễn phí, không cần tạo tài khoản.</dd>
+
+  <dt>Con có thể tự đổi DNS để bypass không?</dt>
+  <dd>Nếu con dùng tài khoản Standard (không phải Admin) thì không thể đổi DNS hệ thống. Còn trong Chrome/Edge, registry policy đã khóa cứng — con không tự thay đổi được, kể cả vào Settings của trình duyệt.</dd>
+
+  <dt>SafeSearch có lọc được YouTube không?</dt>
+  <dd>Google SafeSearch chỉ lọc kết quả tìm kiếm Google. Để lọc nội dung YouTube, bạn nên bật Restricted Mode trên YouTube (hoặc dùng AdGuard DNS Family — nó cũng lọc một phần nội dung 18+ trên YouTube).</dd>
 </dl>
 
 <footer>
