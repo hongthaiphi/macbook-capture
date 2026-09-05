@@ -1,6 +1,6 @@
 # Developer Guide — Windows Monitor
 
-## Quick Start
+## Quick Start (Development)
 
 ```bash
 cd windows-monitor
@@ -9,6 +9,29 @@ copy config.example.json config.json
 pip install -r requirements.txt
 python -m monitor
 ```
+
+## Building Distribution Package
+
+To create a self-contained package that doesn't require Python:
+
+```bash
+# On a Windows machine with Python installed:
+build.bat
+```
+
+This uses PyInstaller to bundle everything into `dist\WindowsMonitor\`:
+
+```
+WindowsMonitor\
+├── monitor\              # monitor.exe + bundled Python runtime + all dependencies
+├── config.example.json
+├── install.bat           # One-click installer (asks for Telegram token + admin credentials)
+├── uninstall.bat
+├── setup-safe-dns.bat
+└── undo-safe-dns.bat
+```
+
+Zip the `WindowsMonitor` folder and send to the parent. They just extract, run `install.bat` as Administrator, and follow the prompts. No Python installation needed.
 
 ## Architecture Overview
 
