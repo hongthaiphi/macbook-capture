@@ -103,7 +103,7 @@ echo.
 :: Runs wscript.exe with VBS wrapper = completely hidden
 :: Auto-restart if killed (up to 999 times, every 1 minute)
 echo [1/2] Creating Task Scheduler task...
-powershell -Command "$action = New-ScheduledTaskAction -Execute 'wscript.exe' -Argument '\""%MONITOR_DIR%\start-monitor.vbs""\"' -WorkingDirectory '%MONITOR_DIR%'; $trigger = New-ScheduledTaskTrigger -AtLogOn; $principal = New-ScheduledTaskPrincipal -GroupId 'BUILTIN\Users' -RunLevel Limited; $settings = New-ScheduledTaskSettingsSet -RestartCount 999 -RestartInterval (New-TimeSpan -Minutes 1) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -ExecutionTimeLimit 0 -MultipleInstances IgnoreNew; Register-ScheduledTask -TaskName 'WindowsMonitor' -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Force | Out-Null; $t = Get-ScheduledTask -TaskName 'WindowsMonitor'; Write-Host '  OK - Task created'; Write-Host '  Execute:' $t.Actions[0].Execute $t.Actions[0].Arguments"
+powershell -ExecutionPolicy Bypass -File "%MONITOR_DIR%\setup-task.ps1" -MonitorDir "%MONITOR_DIR%" -VbsPath "%MONITOR_DIR%\start-monitor.vbs"
 
 if %errorlevel% neq 0 echo  FAILED - Task Scheduler setup failed.
 if %errorlevel% equ 0 echo  Auto-restarts up to 999 times if killed.
