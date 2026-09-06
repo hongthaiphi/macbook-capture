@@ -1,5 +1,31 @@
-<title>Hướng dẫn Windows Monitor</title>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Windows Monitor — Bảo vệ con trên Internet</title>
+<meta name="description" content="Ứng dụng giám sát máy tính miễn phí cho phụ huynh. Theo dõi thời gian, chặn web xấu, chụp màn hình, giới hạn game — điều khiển từ xa qua Telegram.">
+
+<!-- Open Graph — Telegram, Facebook, Zalo preview -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Windows Monitor — Bảo vệ con trên Internet">
+<meta property="og:description" content="Ứng dụng giám sát máy tính miễn phí. Chặn web đen, giới hạn thời gian game, chụp màn hình tự động — điều khiển từ xa qua Telegram. Dựa trên khoa học não bộ.">
+<meta property="og:url" content="https://dangleapp.netlify.app/">
+<meta property="og:image" content="https://dangleapp.netlify.app/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="vi_VN">
+<meta property="og:site_name" content="Windows Monitor">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Windows Monitor — Bảo vệ con trên Internet">
+<meta name="twitter:description" content="Ứng dụng giám sát máy tính miễn phí. Chặn web đen, giới hạn game, chụp màn hình — điều khiển từ xa qua Telegram.">
+<meta name="twitter:image" content="https://dangleapp.netlify.app/og-image.png">
+
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+</head>
+<body>
 <style>
   :root {
     --bg: #FDFCFA;
@@ -621,9 +647,86 @@
 
   .faq-item.open .faq-a { display: block; }
 
+  /* ── CTA ── */
+  .cta-section {
+    margin-top: 4rem;
+    text-align: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2.5rem 1.5rem;
+  }
+
+  .cta-section h2 {
+    margin-bottom: 0.5rem;
+  }
+
+  .cta-section p {
+    color: var(--text-secondary);
+    max-width: 420px;
+    margin: 0 auto 1.5rem;
+  }
+
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--accent);
+    color: #fff;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.85rem 1.75rem;
+    border-radius: 100px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.15s;
+  }
+
+  .cta-btn:hover { opacity: 0.88; }
+
+  .cta-btn svg {
+    width: 1.1em;
+    height: 1.1em;
+    fill: currentColor;
+  }
+
+  .contact-row {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .contact-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.55rem 1rem;
+    background: var(--surface-alt);
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    transition: border-color 0.15s;
+  }
+
+  .contact-item:hover {
+    border-color: var(--accent);
+  }
+
+  .contact-icon {
+    font-size: 1.15rem;
+    line-height: 1;
+  }
+
   /* ── Footer ── */
   footer {
-    margin-top: 4rem;
+    margin-top: 2rem;
     padding-top: 1.5rem;
     border-top: 1px solid var(--border);
     text-align: center;
@@ -673,6 +776,76 @@
   <div class="hero-badge">Parental Control</div>
   <h1>Windows Monitor</h1>
   <p class="hero-sub">Theo dõi & bảo vệ con trên máy tính, điều khiển từ xa qua Telegram</p>
+</div>
+
+<!-- ═══ Why ═══ -->
+<div class="section">
+  <h2>Tại sao cần giám sát?</h2>
+  <p>Không phải vì không tin con. Mà vì <strong>não bộ của con chưa phát triển đủ</strong> để tự bảo vệ trước những gì internet đưa tới.</p>
+
+  <div class="card">
+    <div class="card-eyebrow">Khoa học não bộ</div>
+    <h3>Vỏ não trước trán chưa trưởng thành</h3>
+    <p>Vỏ não trước trán (prefrontal cortex) — vùng chịu trách nhiệm <strong>kiểm soát xung động, đánh giá hậu quả, và ra quyết định</strong> — chỉ phát triển hoàn thiện ở tuổi 25. Trẻ 8–16 tuổi đang dùng internet với một "bộ phanh" chưa hoàn chỉnh.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-eyebrow">Dopamine & nghiện màn hình</div>
+    <h3>Vòng lặp dopamine đang "hack" não con</h3>
+    <p>TikTok, YouTube Shorts, game online được thiết kế để kích hoạt <strong>dopamine</strong> liên tục — cùng chất dẫn truyền thần kinh liên quan đến nghiện. Não trẻ em nhạy cảm với dopamine gấp 2–3 lần người lớn, khiến trẻ <strong>không thể tự dừng</strong> dù biết nên dừng.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-eyebrow">Nghiên cứu</div>
+    <h3>Hậu quả đã được chứng minh</h3>
+    <p>Nghiên cứu từ NIH (Mỹ) trên 11.000 trẻ cho thấy: trẻ dùng màn hình &gt;2h/ngày có <strong>vỏ não mỏng hơn</strong> — vùng liên quan đến tư duy phản biện và ngôn ngữ. Trẻ dùng &gt;7h/ngày giảm điểm trí nhớ và khả năng tập trung.</p>
+  </div>
+
+  <h3>Não trẻ em vs. Não người lớn</h3>
+  <div class="compare">
+    <div class="compare-side compare-bad">
+      <div class="compare-tag">Não trẻ em (8–16)</div>
+      <div class="compare-body">Vỏ não trước trán chưa hoàn thiện<br>Dopamine nhạy cảm cao<br>Dễ bị cuốn, khó tự dừng<br>Chưa đánh giá được rủi ro</div>
+    </div>
+    <div class="compare-side compare-good">
+      <div class="compare-tag">Não người lớn (25+)</div>
+      <div class="compare-body">Vỏ não trước trán trưởng thành<br>Tự kiểm soát xung động<br>Biết khi nào nên dừng<br>Đánh giá hậu quả trước khi hành động</div>
+    </div>
+  </div>
+
+  <div class="callout callout-info">
+    <div class="callout-label">Quan điểm</div>
+    <p>Giám sát không phải kiểm soát con — mà là <strong>đóng vai vỏ não trước trán</strong> cho con, cho đến khi phần não đó trưởng thành. Giống như bạn cầm tay con khi qua đường, không phải vì không tin con, mà vì xe cộ ngoài kia quá nhanh cho phản xạ của trẻ.</p>
+  </div>
+
+  <h3>3 rủi ro lớn nhất</h3>
+  <div class="shields">
+    <div class="shield">
+      <div class="shield-icon">🧠</div>
+      <div class="shield-name">Nghiện màn hình</div>
+      <div class="shield-text">Dopamine loop khiến trẻ mất khả năng tập trung, giảm động lực học. WHO đã xếp nghiện game là rối loạn tâm thần (ICD-11)</div>
+    </div>
+    <div class="shield">
+      <div class="shield-icon">😰</div>
+      <div class="shield-name">Sức khỏe tâm thần</div>
+      <div class="shield-text">Trẻ dùng mạng xã hội &gt;3h/ngày có nguy cơ trầm cảm và lo âu gấp đôi (nghiên cứu APA 2023)</div>
+    </div>
+    <div class="shield">
+      <div class="shield-icon">🔞</div>
+      <div class="shield-name">Nội dung có hại</div>
+      <div class="shield-text">Trung bình trẻ tiếp xúc nội dung 18+ lần đầu ở tuổi 11. Não chưa có khung đạo đức để xử lý</div>
+    </div>
+    <div class="shield">
+      <div class="shield-icon">👥</div>
+      <div class="shield-name">Bắt nạt & lừa đảo</div>
+      <div class="shield-text">37% trẻ từng bị bắt nạt trực tuyến. Trẻ thiếu kinh nghiệm nhận diện người xấu online</div>
+    </div>
+  </div>
+
+  <div class="callout callout-tip">
+    <div class="callout-label">Giải pháp</div>
+    <p>Windows Monitor giúp bạn <strong>có mặt bên con</strong> ngay cả khi không ngồi cạnh. Không cấm đoán hoàn toàn — mà giám sát, giới hạn hợp lý, và can thiệp đúng lúc.</p>
+  </div>
 </div>
 
 <!-- ═══ What it does ═══ -->
@@ -1144,8 +1317,30 @@
   </div>
 </div>
 
+<!-- ═══ CTA ═══ -->
+<div class="cta-section">
+  <h2>Bắt đầu bảo vệ con ngay</h2>
+  <p>Miễn phí, mã nguồn mở. Tải về, cài đặt trong 5 phút.</p>
+
+  <a class="cta-btn" href="https://github.com/hongthaiphi/macbook-capture/tree/main/windows-monitor" target="_blank" rel="noopener">
+    <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+    Tải mã nguồn trên GitHub
+  </a>
+
+  <div class="contact-row">
+    <a class="contact-item" href="https://zalo.me/0987024488" target="_blank" rel="noopener">
+      <span class="contact-icon">💬</span>
+      Zalo: 0987024488
+    </a>
+    <a class="contact-item" href="https://t.me/Thaiph" target="_blank" rel="noopener">
+      <span class="contact-icon">✈️</span>
+      Telegram: @Thaiph
+    </a>
+  </div>
+</div>
+
 <footer>
-  Windows Monitor &middot; Parental Control qua Telegram
+  Windows Monitor &middot; Parental Control qua Telegram &middot; Open Source
 </footer>
 
 <script>
@@ -1157,3 +1352,5 @@
     });
   });
 </script>
+</body>
+</html>
