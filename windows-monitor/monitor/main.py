@@ -127,11 +127,14 @@ async def main():
         t.cancel()
     await asyncio.gather(*tasks, return_exceptions=True)
 
+    try:
+        await bot.send_message(chat_id=chat_id, text="🔴 Windows Monitor stopped")
+    except Exception:
+        logger.debug("Could not send stop message", exc_info=True)
+
     await app.updater.stop()
     await app.stop()
     await app.shutdown()
-
-    await bot.send_message(chat_id=chat_id, text="🔴 Windows Monitor stopped")
     logger.info("Shutdown complete")
 
 

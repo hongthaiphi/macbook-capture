@@ -18,6 +18,10 @@ echo Done.
 echo Stopping monitor process...
 taskkill /f /im pythonw.exe >nul 2>&1
 
+:: Clean up launcher files
+del "%~dp0start-monitor.vbs" >nul 2>&1
+del "%~dp0start-monitor.bat" >nul 2>&1
+
 :: Clean hosts file
 echo Cleaning hosts file...
 powershell -Command "(Get-Content 'C:\Windows\System32\drivers\etc\hosts') | Where-Object { $_ -notmatch 'MONITOR-BLOCKED' } | Set-Content 'C:\Windows\System32\drivers\etc\hosts'"

@@ -102,14 +102,14 @@ echo.
 :: ===== LAYER 2: Registry Run key =====
 :: HKLM\...\Run = runs for ALL users on login
 :: Standard users CANNOT modify HKLM registry = cannot disable this
-:: Create a wrapper script so working directory is set correctly
+:: Create a VBScript wrapper — runs completely hidden, no CMD window
 echo [2/2] Adding registry auto-start...
 
-echo @echo off> "%MONITOR_DIR%\start-monitor.bat"
-echo cd /d "%MONITOR_DIR%">> "%MONITOR_DIR%\start-monitor.bat"
-echo start "" "%PYTHONW_PATH%" -m monitor>> "%MONITOR_DIR%\start-monitor.bat"
+echo Set ws = CreateObject("WScript.Shell")> "%MONITOR_DIR%\start-monitor.vbs"
+echo ws.CurrentDirectory = "%MONITOR_DIR%">> "%MONITOR_DIR%\start-monitor.vbs"
+echo ws.Run """%PYTHONW_PATH%"" -m monitor", 0, False>> "%MONITOR_DIR%\start-monitor.vbs"
 
-reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "WindowsMonitor" /d "%MONITOR_DIR%\start-monitor.bat" /f >nul
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "WindowsMonitor" /d "wscript.exe \"%MONITOR_DIR%\start-monitor.vbs\"" /f >nul
 if %errorlevel% equ 0 echo  OK - Registry auto-start added.
 if %errorlevel% neq 0 echo  FAILED - Registry auto-start failed.
 
