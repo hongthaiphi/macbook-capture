@@ -14,7 +14,7 @@ from .config import BASE_DIR
 _log_file = str(BASE_DIR / "monitor.log")
 
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     handlers=[
         logging.StreamHandler(sys.stdout),

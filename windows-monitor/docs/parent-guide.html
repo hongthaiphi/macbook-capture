@@ -926,27 +926,47 @@
     <li>
       <div>
         <strong>Chạy install.bat</strong>
-        <span>Chuột phải → "Run as administrator". Nhập Bot Token, Chat ID, và tên/mật khẩu tài khoản Admin khi được hỏi. App tự cấu hình và chạy.</span>
+        <span>Chuột phải → "Run as administrator". Nhập Bot Token và Chat ID khi được hỏi. App tự cấu hình, cài 2 lớp auto-start, và bắt đầu chạy ngầm.</span>
       </div>
     </li>
     <li>
       <div>
         <strong>Chạy setup-safe-dns.bat</strong>
-        <span>Chuột phải → "Run as administrator". Bật bảo vệ DNS + SafeSearch. Chạy 1 lần là xong.</span>
+        <span>Chuột phải → "Run as administrator". Bật bảo vệ DNS + SafeSearch cho Chrome, Edge, và Firefox. Chạy 1 lần là xong.</span>
       </div>
     </li>
     <li>
       <div>
         <strong>Tạo tài khoản Standard cho con</strong>
-        <span>Settings → Accounts → Family → Add account → chọn Standard User. Con dùng tài khoản này sẽ không thể tắt app, gỡ cài đặt, hay thay đổi DNS.</span>
+        <span>Settings → Accounts → Family → Add account → chọn Standard User. <strong>Bước này bắt buộc</strong> — con dùng tài khoản Standard sẽ không thể gỡ cài đặt hay thay đổi DNS.</span>
       </div>
     </li>
   </ol>
 
   <div class="callout callout-warn">
     <div class="callout-label">Quan trọng</div>
-    <p>App chạy dưới quyền <strong>Administrator</strong> — standard user không thể tắt process, không thể gỡ cài đặt, không thể thay đổi cấu hình. Nếu app crash, tự khởi động lại sau 1 phút.</p>
+    <p>Con <strong>phải dùng tài khoản Standard</strong>. Nếu con dùng Admin, toàn bộ bảo vệ đều vô hiệu — con có thể xóa Task Scheduler, registry, DNS policy.</p>
   </div>
+
+  <h3>Bảo vệ chạy nền — 2 lớp</h3>
+  <p>App được bảo vệ bằng 2 cơ chế tự khởi động, đảm bảo luôn chạy:</p>
+  <div class="layers">
+    <div class="layer-row">
+      <div class="layer-num">1</div>
+      <div class="layer-info">
+        <strong>Task Scheduler</strong>
+        <span>Tự chạy khi bất kỳ ai đăng nhập. Nếu bị tắt → tự khởi động lại sau 1 phút (lên tới 999 lần)</span>
+      </div>
+    </div>
+    <div class="layer-row">
+      <div class="layer-num">2</div>
+      <div class="layer-info">
+        <strong>Registry HKLM\Run</strong>
+        <span>Backup auto-start — standard user <strong>không thể xóa</strong> registry key này</span>
+      </div>
+    </div>
+  </div>
+  <p>App chạy hoàn toàn ẩn — không hiện cửa sổ, không có icon trên taskbar. Log hoạt động ghi vào file <code>monitor.log</code> (tự giới hạn dung lượng, không đầy ổ đĩa).</p>
 </div>
 
 <!-- ═══ DNS Protection ═══ -->
@@ -1056,10 +1076,9 @@
 
   <h3>Firefox</h3>
   <div class="card">
-    <div class="card-eyebrow">2 cách</div>
-    <h3>Gỡ Firefox hoặc cấu hình riêng</h3>
-    <p><strong>Cách 1 (đơn giản):</strong> Gỡ Firefox, chỉ cho dùng Chrome/Edge — đã được bảo vệ.<br>
-    <strong>Cách 2:</strong> Tạo file policy tại <code>C:\Program Files\Mozilla Firefox\distribution\policies.json</code></p>
+    <div class="card-eyebrow">Đã hỗ trợ</div>
+    <h3>Firefox được bảo vệ tự động</h3>
+    <p><code>setup-safe-dns.bat</code> tự cài DNS policy cho Firefox qua registry + file policies.json. Firefox bị ép dùng AdGuard DNS (DoH only), tắt Private Browsing. Kiểm tra: mở <code>about:policies</code> trong Firefox.</p>
   </div>
 </div>
 
@@ -1070,12 +1089,12 @@
   <div class="faq-list">
     <div class="faq-item">
       <button class="faq-q">Con có biết app đang chạy không?</button>
-      <div class="faq-a">App chạy ngầm, không hiển thị cửa sổ. Tuy nhiên, nếu con biết mở Task Manager thì có thể thấy process Python đang chạy.</div>
+      <div class="faq-a">App chạy hoàn toàn ẩn — không cửa sổ, không icon trên taskbar, không hiện trong khay hệ thống. Nếu con biết mở Task Manager thì có thể thấy process <code>pythonw.exe</code>, nhưng tên này không gợi ý gì đặc biệt.</div>
     </div>
 
     <div class="faq-item">
       <button class="faq-q">Con có thể tắt app không?</button>
-      <div class="faq-a">Không, nếu con dùng tài khoản Standard. App chạy dưới quyền Administrator — khi con mở Task Manager và thử End Task, sẽ bị "Access Denied". Nếu bằng cách nào đó app bị crash, nó tự khởi động lại sau 1 phút. Bạn cũng nhận tin nhắn "Monitor stopped" trên Telegram nếu app bị dừng.</div>
+      <div class="faq-a">Con có thể tắt process trong Task Manager, nhưng app <strong>tự khởi động lại sau 1 phút</strong> nhờ Task Scheduler. Ngoài ra, registry auto-start (HKLM) đảm bảo app luôn chạy khi đăng nhập — và standard user <strong>không thể xóa</strong> registry key này. App chạy ẩn (không cửa sổ, không icon), nên hầu hết trẻ em sẽ không biết có app đang chạy.</div>
     </div>
 
     <div class="faq-item">
@@ -1085,7 +1104,7 @@
 
     <div class="faq-item">
       <button class="faq-q">Con có thể gỡ cài đặt app không?</button>
-      <div class="faq-a">Không, nếu con dùng tài khoản Standard. App chạy dưới quyền Admin, file nằm ở thư mục chỉ Admin mới xóa được, và Task Scheduler chỉ Admin mới sửa được. Rất quan trọng: tạo cho con tài khoản Standard, không cho dùng tài khoản Admin.</div>
+      <div class="faq-a">Không, nếu con dùng tài khoản Standard. Registry auto-start nằm ở HKLM — chỉ Admin mới xóa được. Task Scheduler task cũng chỉ Admin mới sửa. Con có thể xóa file nhưng app vẫn tự chạy lại từ registry khi đăng nhập lần sau. <strong>Quan trọng:</strong> tạo cho con tài khoản Standard, không cho dùng tài khoản Admin.</div>
     </div>
 
     <div class="faq-item">
