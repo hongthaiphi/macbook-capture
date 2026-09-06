@@ -37,6 +37,41 @@ logger.info("Python: %s", sys.executable)
 logger.info("Frozen: %s", getattr(sys, "frozen", False))
 logger.info("=" * 50)
 
+# Single-instance lock using a lock file
+_lock_file = str(BASE_DIR / "monitor.lock")
+_lock_handle = None
+
+def _acquire_lock():
+    global _lock_handle
+    if sys.platform == "win32":
+        import msvcrt
+        try:
+            _lock_handle = open(_lock_file, "w")
+            msvcrt.locking(_lock_handle.fileno(), msvcrt.LK_NBLCK, 1)
+            _lock_handle.write(str(os.getpid()))
+            _lock_handle.flush()
+            logger.info("Lock acquired (PID %d)", os.getpid())
+            return True
+        except (OSError, IOError):
+            logger.warning("Another instance is already running. Exiting.")
+            if _lock_handle:
+                _lock_handle.close()
+            return False
+    return True
+
+def _release_lock():
+    global _lock_handle
+    if _lock_handle:
+        try:
+            if sys.platform == "win32":
+                import msvcrt
+                _lock_handle.seek(0)
+                msvcrt.locking(_lock_handle.fileno(), msvcrt.LK_UNLCK, 1)
+            _lock_handle.close()
+            os.remove(_lock_file)
+        except Exception:
+            pass
+
 from .config import load_config
 from .db import init_db
 from .tracker import Tracker, get_idle_seconds
@@ -139,11 +174,15 @@ async def main():
 
 
 def run():
+    if not _acquire_lock():
+        return
     try:
         asyncio.run(main())
     except Exception:
         logger.exception("Fatal error")
         raise
+    finally:
+        _release_lock()
 
 
 if __name__ == "__main__":
